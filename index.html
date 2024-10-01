@@ -8,22 +8,34 @@
 </head>
 <body>
   <style>
+      html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
     .container {
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
       flex-direction: column;
     }
   </style>
-  <div id="goban" class="container">
-    <div id="controls" style="display: flex; height: 10vw;">
-      <button onclick="play()" style="width: 100%; font-size: 5vw;">MOVE</button>
-      <button onclick="goban.pass();" style="width: 100%; font-size: 5vw;">PASS</button>
-      <button onclick="goban.undoMove()" style="width: 100%; font-size: 5vw;">UNDO</button>
-      <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'Edit mode' : 'Play mode';" style="width: 100%; font-size: 5vw;">EDIT</button>
-      <button onclick="eval();" style="width: 100%; font-size: 5vw;">EVAL</button>
-      <button onclick="downloadSgf()" style="width: 100%; font-size: 5vw;">SAVE</button>
-    </div>
+  <div id="stats" style="font-size: 40px; margin-top: 2%;">Play Mode</div>
+  <div class="container">
+    <div id="goban"></div>
+  </div>
+  <div id="controls">
+    <button onclick="play()" style="width: 100%; font-size: 40px;">MOVE</button>
+    <button onclick="goban.pass();" style="width: 100%; font-size: 40px;">PASS</button>
+    <button onclick="goban.undoMove()" style="width: 100%; font-size: 40px;">UNDO</button>
+    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'Edit Mode' : 'Play Mode'" style="width: 100%; font-size: 40px;">MODE</button>
+    <button onclick="eval();" style="width: 100%; font-size: 40px;">EVAL</button>
+    <button onclick="downloadSgf()" style="width: 100%; font-size: 40px;">SAVE</button>
   </div>
   <script src="js/tensorflow.js"></script>
   <script src="js/goban.js"></script>

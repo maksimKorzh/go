@@ -304,14 +304,11 @@ const Goban = function(params) {
   }
 
   function resizeCanvas() {
-    if (window.innerWidth > window.innerHeight) {
-      canvas.width = window.innerHeight;   // Landscape
-      canvas.height = canvas.width;
-    } else {
-      canvas.width = window.innerWidth-20;    // Portrait
-      canvas.height = canvas.width;
-    } drawBoard();
-    document.getElementById('controls').style = 'display: flex; height: 10vh; width: ' + canvas.width + 'px;';
+    if (window.innerWidth >= window.innerHeight) window.innerWidth = 800;
+    canvas.width = window.innerWidth-20;
+    canvas.height = canvas.width;
+    drawBoard();
+    document.getElementById('controls').style = 'display: flex; margin-bottom: 1%; height: 6vh; width: ' + (canvas.width+3) + 'px;';
   }
 
   function init() { /* Init goban module */

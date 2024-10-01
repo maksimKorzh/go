@@ -94,6 +94,7 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
 
 async function play() { /* Play best move */
   if (editMode) return;
+  document.getElementById('stats').innerHTML = 'Thinking...';
   computerSide = goban.side();
   const bin_inputs = inputTensor();
   try {
@@ -126,6 +127,7 @@ async function play() { /* Play best move */
         katagoColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
         playerColor = computerSide == goban.BLACK ? 'Black' : 'White';
       }*/
+      document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
       let bestMove = 21 * (row_19+1) + (col_19+1);
       if (!goban.play(bestMove, computerSide, false)) {
         if (move != topMoves.length-1) continue;
@@ -139,6 +141,7 @@ async function play() { /* Play best move */
 }
 
 async function eval() { /* Estimate score */
+  document.getElementById('stats').innerHTML = 'Estimating Score...';
   computerSide = goban.side();
   const bin_inputs = inputTensor();
   try {
@@ -153,6 +156,7 @@ async function eval() { /* Estimate score */
     let scoreLead = (flatScores[2]*20).toFixed(2);
     let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
     let playerColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
+    document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
   } catch (e) {
     console.log(e);
   }
