@@ -36,21 +36,21 @@ const Goban = function(params) {
 
   // PRIVATE METHODS
   function drawBoard() { /* Render board to screen */
-    cell = canvas.width / size;
+    cell = canvas.width / (size-2);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
-    for (let i = 1; i < size-1; i++) {
+    for (let i = 0; i < size-2; i++) {
       const x = i * cell + cell / 2;
       const y = i * cell + cell / 2;
-      let offset = cell * 2 - cell / 2;
+      let offset = cell * 2 - cell / 2 - cell;
       ctx.moveTo(offset, y);
       ctx.lineTo(canvas.width - offset, y);
       ctx.moveTo(x, offset);
       ctx.lineTo(x, canvas.height - offset);
     };ctx.stroke();
-    for (let row = 0; row < size; row++) {
-      for (let col = 0; col < size; col++) {
-        let sq = row * size + col;
+    for (let row = 0; row < size-2; row++) {
+      for (let col = 0; col < size-2; col++) {
+        let sq = (row+1) * size + (col+1);
         let starPoints = {
            9: [36, 38, 40, 58, 60, 62, 80, 82, 84],
           13: [64, 67, 70, 109, 112, 115, 154, 157, 160],
@@ -91,7 +91,7 @@ const Goban = function(params) {
     let mouseY = event.clientY - rect.top;
     let col = Math.floor(mouseX / cell);
     let row = Math.floor(mouseY / cell);
-    let sq = row * size + col;
+    let sq = (row+1) * size + (col+1);
     if (board[sq]) return;
     if (!setStone(sq, side, true)) return;
     drawBoard();
@@ -304,20 +304,20 @@ const Goban = function(params) {
   }
 
   function resizeCanvas() {
-    let offset = params.offset == undefined ? 0 : params.offset;
     if (window.innerWidth > window.innerHeight) {
-      canvas.width = window.innerHeight - offset; // Desktop
+      canvas.width = window.innerHeight;   // Landscape
       canvas.height = canvas.width;
     } else {
-      canvas.width = window.innerWidth - offset;  // Mobile
+      canvas.width = window.innerWidth-20;    // Portrait
       canvas.height = canvas.width;
     } drawBoard();
+    document.getElementById('controls').style = 'display: flex; height: 10vh; width: ' + canvas.width + 'px;';
   }
 
   function init() { /* Init goban module */
     let container = document.getElementById('goban');
     canvas = document.createElement('canvas');
-    canvas.style="margin-bottom: -3%;";
+    canvas.style = 'border: 2px solid black;';
     container.appendChild(canvas);
     size = params.size+2;
     canvas.addEventListener('click', userInput);
