@@ -115,12 +115,10 @@ async function play() { /* Play best move */
     let topMoves = [];
     for (let move of topPolicies) topMoves.push(flatPolicyArray.indexOf(move));
     for (let move = 0; move < topMoves.length; move++) {
-      if (goban.history().length < 10) move = Math.floor(Math.random() * 3);
-      let best_19 = topMoves[0];//topMoves[move];
+      let best_19 = topMoves[move];
       let row_19 = Math.floor(best_19 / 19);
       let col_19 = best_19 % 19;
       let scoreLead = (flatScores[2]*20).toFixed(2);
-      console.log(flatScores, scoreLead);
       let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
       let playerColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
       /*if (level == 'kyu') {
@@ -143,7 +141,7 @@ async function play() { /* Play best move */
 }
 
 async function eval() { /* Estimate score */
-  /*document.getElementById('stats').innerHTML = 'KataNet is estimating score...';
+  document.getElementById('stats').innerHTML = 'KataNet is estimating score...';
   computerSide = goban.side();
   const bin_inputs = inputTensor();
   try {
@@ -153,7 +151,7 @@ async function eval() { /* Estimate score */
         "swa_model/bin_inputs": tf.tensor(bin_inputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
         "swa_model/global_inputs": tf.tensor(global_inputs, [batches, inputGlobalBufferChannels], 'float32')
     });
-    let scores = results[2];
+    let scores = results[1];
     let flatScores = scores.dataSync(2);
     let scoreLead = (flatScores[2]*20).toFixed(2);
     let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
@@ -161,5 +159,5 @@ async function eval() { /* Estimate score */
     document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
   } catch (e) {
     console.log(e);
-  }*/
+  }
 }
