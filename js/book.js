@@ -1620,7 +1620,7 @@ function bookMove(moves) {
       let move = game.split(moves)[1].split(';')[1];
       if (move[0] == 'B' || move[0] == 'W') {
         let skip = Math.floor(Math.random() * 2);
-        if (variation > 1 && variation < 10 && skip) continue;
+        if (variation > 1 && variation < 100 && skip) continue;
         let col = move.charCodeAt(2)-97;
         let row = move.charCodeAt(3)-97;
         let sq = (row+1) * 21 + (col+1);
