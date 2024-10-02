@@ -25,7 +25,7 @@
       flex-direction: column;
     }
   </style>
-  <div id="stats" style="font-size: 40px; margin-top: 2%;">Play Mode</div>
+  <div id="stats" style="font-size: 40px; margin-top: 2%;">Chinese rules, komi 7.5</div>
   <div class="container">
     <div id="goban"></div>
   </div>
@@ -33,7 +33,7 @@
     <button onclick="play()" style="width: 100%; font-size: 40px;">MOVE</button>
     <button onclick="goban.pass();" style="width: 100%; font-size: 40px;">PASS</button>
     <button onclick="goban.undoMove()" style="width: 100%; font-size: 40px;">UNDO</button>
-    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'Edit Mode' : 'Play Mode'" style="width: 100%; font-size: 40px;">MODE</button>
+    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY'" style="width: 100%; font-size: 40px;">MODE</button>
     <button onclick="eval();" style="width: 100%; font-size: 40px;">EVAL</button>
     <button onclick="downloadSgf()" style="width: 100%; font-size: 40px;">SAVE</button>
   </div>

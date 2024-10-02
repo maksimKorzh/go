@@ -24,7 +24,7 @@ const Goban = function(params) {
 
   var board = [];
   var history = [];
-  var komi = 6.5;
+  var komi = 7.5;
   var size;
   var side = BLACK;
   var liberties = [];

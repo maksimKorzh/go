@@ -50,7 +50,7 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
       }
     }
   }
-  if (sq_19x19 == goban.ko()) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
+  if (sq_21x21 == goban.ko()) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
   let moveIndex = goban.history().length-1;
   if (moveIndex >= 1 && goban.history()[moveIndex-1].side == player) {
     let prevLoc1 = goban.history()[moveIndex-1].move;
@@ -141,7 +141,7 @@ async function play() { /* Play best move */
 }
 
 async function eval() { /* Estimate score */
-  document.getElementById('stats').innerHTML = 'Estimating Score...';
+  document.getElementById('stats').innerHTML = 'Estimating score...';
   computerSide = goban.side();
   const bin_inputs = inputTensor();
   try {
