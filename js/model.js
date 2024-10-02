@@ -81,7 +81,15 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
 }
 
 async function play() { /* Play best move */
-  if (editMode) return;
+  if (editMode) { alert('Please switch to "PLAY" mode first'); return; }
+  let sgf = goban.exportSgf().slice(1, -1);
+  let move = bookMove(sgf);
+  if (move) {
+    goban.play(move, computerSide, false)
+    goban.refresh();
+    document.getElementById('stats').innerHTML = 'BOOK';
+    return;
+  }
   document.getElementById('stats').innerHTML = 'Thinking...';
   computerSide = goban.side();
   const bin_inputs = inputTensor();
