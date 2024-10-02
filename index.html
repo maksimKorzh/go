@@ -16,6 +16,10 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      -webkit-user-select: none; /* Chrome, Safari, and Opera */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* Internet Explorer/Edge */
+      user-select: none;         /* Standard syntax */
     }
     .container {
       display: flex;
@@ -24,12 +28,6 @@
       height: 100%;
       width: 100%;
       flex-direction: column;
-    }
-    button {
-      -webkit-user-select: none; /* Chrome, Safari, and Opera */
-      -moz-user-select: none;    /* Firefox */
-      -ms-user-select: none;     /* Internet Explorer/Edge */
-      user-select: none;         /* Standard syntax */
     }
   </style>
   <div id="controls">
