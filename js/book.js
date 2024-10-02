@@ -1628,7 +1628,8 @@ const book = [
 
 function bookMove(moves) {
   for (let game of book) {
-    if (game.includes(moves)) {
+    let result = game.split(moves);
+    if (result.length == 2 && result[0].length == 0) {
       let move = game.split(moves)[1].split(';')[1];
       if (move[0] == 'B' || move[0] == 'W') {
         let col = move.charCodeAt(2)-97;

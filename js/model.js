@@ -80,8 +80,8 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
   return bin_inputs;
 }
 
-async function play() { /* Play best move */
-  if (editMode) { alert('Please switch to "PLAY" mode first'); return; }
+async function play(button) { /* Play best move */
+  if (editMode) { if (button) alert('Please switch to "PLAY" mode first'); return; }
   let sgf = goban.exportSgf().slice(1, -1);
   let move = bookMove(sgf);
   if (move) {
