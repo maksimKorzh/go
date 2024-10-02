@@ -82,6 +82,8 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
 
 async function play(button) { /* Play best move */
   if (editMode) { if (button) alert('Please switch to "PLAY" mode first'); return; }
+  document.getElementById('stats').innerHTML = 'Thinking...';
+  computerSide = goban.side();
   let sgf = goban.exportSgf().slice(1, -1);
   let move = bookMove(sgf);
   if (move) {
@@ -90,8 +92,6 @@ async function play(button) { /* Play best move */
     document.getElementById('stats').innerHTML = 'BOOK';
     return;
   }
-  document.getElementById('stats').innerHTML = 'Thinking...';
-  computerSide = goban.side();
   const bin_inputs = inputTensor();
   try {
     tf.setBackend("cpu");

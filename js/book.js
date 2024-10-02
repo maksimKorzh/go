@@ -1627,6 +1627,7 @@ const book = [
 ]
 
 function bookMove(moves) {
+  if (moves == '') return 100;
   for (let game of book) {
     let result = game.split(moves);
     if (result.length == 2 && result[0].length == 0) {
