@@ -69,7 +69,7 @@
       const element = document.createElement('a');
       const file = new Blob([goban.exportSgf()], { type: 'text/plain' });
       element.href = URL.createObjectURL(file);
-      element.download = 'KataNet.sgf';
+      element.download = 'game.sgf';
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);

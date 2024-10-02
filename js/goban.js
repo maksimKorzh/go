@@ -308,7 +308,7 @@ const Goban = function(params) {
     canvas.width = window.innerWidth-20;
     canvas.height = canvas.width;
     drawBoard();
-    document.getElementById('controls').style = 'display: flex; margin-top: 2%; height: 6vh; width: ' + (canvas.width+3) + 'px;';
+    document.getElementById('controls').style = 'display: flex; margin-top: 1%; height: 6vh; width: ' + (canvas.width+3) + 'px;';
   }
 
   function init() { /* Init goban module */
