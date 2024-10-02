@@ -32,10 +32,6 @@
       user-select: none;         /* Standard syntax */
     }
   </style>
-  <div id="stats" style="font-size: 40px; margin-top: 2%;">AI (dan), Chinese rules, Komi 7.5</div>
-  <div class="container">
-    <div id="goban"></div>
-  </div>
   <div id="controls">
     <button onclick="play(1)" style="width: 100%; font-size: 30px;">MOVE</button>
     <button onclick="goban.pass();" style="width: 100%; font-size: 30px;">PASS</button>
@@ -45,6 +41,8 @@
     <button onclick="eval();" style="width: 100%; font-size: 30px;">EVAL</button>
     <button onclick="downloadSgf()" style="width: 100%; font-size: 30px;">SAVE</button>
   </div>
+  <div class="container"><div id="goban"></div></div>
+  <div id="stats" style="font-size: 40px; margin-bottom: 2%;">AI (dan), Chinese rules, Komi 7.5</div>
   <script src="js/tensorflow.js"></script>
   <script src="js/goban.js"></script>
   <script src="js/book.js"></script>
