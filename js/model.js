@@ -5,25 +5,13 @@ const inputBufferChannels = 22;
 const inputGlobalBufferChannels = 19;
 const global_inputs = new Float32Array(batches * inputGlobalBufferChannels);
 var computerSide = 2;
-var level = 'dan';
-
-// PARSE PARAMS
-/*const urlParams = new URLSearchParams(window.location.search);
-try {
-  setTimeout(function() {
-    if (urlParams.get('komi')) goban.setKomi(parseFloat(urlParams.get('komi')));
-    goban.handicap(parseInt(urlParams.get('handicap')));
-    level = urlParams.get('level');
-  }, 100);
-} catch (e) { console.log(e); }
-*/
-
+var level = 1; // Dan = 1; Kyu = 0
 
 // QUERY MODEL
 function inputTensor() { /* Convert GUI goban.position() to katago model input tensor */
   let katago = computerSide;
   let player = (3-computerSide);
-  if (level == 'kyu') {
+  if (level == 0) {
     player = computerSide;
     katago = (3-computerSide);
   }
@@ -104,7 +92,6 @@ async function play() { /* Play best move */
         "swa_model/bin_inputs": tf.tensor(bin_inputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
         "swa_model/global_inputs": tf.tensor(global_inputs, [batches, inputGlobalBufferChannels], 'float32')
     });
-
     const policyTensor = results[3];
     const policyArray = await policyTensor.slice([0, 0, 0], [1, 1, 361]).array();
     const flatPolicyArray = policyArray[0][0];
@@ -121,12 +108,12 @@ async function play() { /* Play best move */
       let scoreLead = (flatScores[2]*20).toFixed(2);
       let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
       let playerColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
-      /*if (level == 'kyu') {
+      if (level == 0) {
         scoreLead -= (20+goban.komi());
         scoreLead = scoreLead.toFixed(2);
         katagoColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
         playerColor = computerSide == goban.BLACK ? 'Black' : 'White';
-      }*/
+      }
       document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
       let bestMove = 21 * (row_19+1) + (col_19+1);
       if (!goban.play(bestMove, computerSide, false)) {

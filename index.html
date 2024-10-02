@@ -25,17 +25,18 @@
       flex-direction: column;
     }
   </style>
-  <div id="stats" style="font-size: 40px; margin-top: 2%;">Chinese rules, komi 7.5</div>
+  <div id="stats" style="font-size: 40px; margin-top: 2%;">AI (dan), Chinese rules, Komi 7.5</div>
   <div class="container">
     <div id="goban"></div>
   </div>
   <div id="controls">
-    <button onclick="play()" style="width: 100%; font-size: 40px;">MOVE</button>
-    <button onclick="goban.pass();" style="width: 100%; font-size: 40px;">PASS</button>
-    <button onclick="goban.undoMove()" style="width: 100%; font-size: 40px;">UNDO</button>
-    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY'" style="width: 100%; font-size: 40px;">MODE</button>
-    <button onclick="eval();" style="width: 100%; font-size: 40px;">EVAL</button>
-    <button onclick="downloadSgf()" style="width: 100%; font-size: 40px;">SAVE</button>
+    <button onclick="play()" style="width: 100%; font-size: 30px;">MOVE</button>
+    <button onclick="goban.pass();" style="width: 100%; font-size: 30px;">PASS</button>
+    <button onclick="goban.undoMove()" style="width: 100%; font-size: 30px;">UNDO</button>
+    <button onclick="level ^= 1; document.getElementById('stats').innerHTML = level ? 'AI (dan)' : 'AI (kyu)'" style="width: 100%; font-size: 30px;">AI</button>
+    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY'" style="width: 100%; font-size: 30px;">MODE</button>
+    <button onclick="eval();" style="width: 100%; font-size: 30px;">EVAL</button>
+    <button onclick="downloadSgf()" style="width: 100%; font-size: 30px;">SAVE</button>
   </div>
   <script src="js/tensorflow.js"></script>
   <script src="js/goban.js"></script>
