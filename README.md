@@ -31,11 +31,13 @@ quite severe.
  - DESKTOP: **Menu -> Cast, save and share -> Install Game Of Go**
  - MOBILE: **Menu -> Add to home screen -> Install**
 
-NOTE: If you want reinstall/update make sure to clear cache first<br><br>
+NOTE: If you want reinstall/update make sure to clear cache first
+<br><br>
 DESKTOP:<br>
  - **DevTools -> Application -> Service workers -> Unregister**
  - **DevTools -> Network -> Disable cache**
- - Reload page<br><br>
+ - Reload page
+ <br><br>
 MOBILE:<br>
  - **Menu -> Settings -> Site settings -> All sites -> maksimkorzh.github.io -> [trash icon]**
  - Reload page
