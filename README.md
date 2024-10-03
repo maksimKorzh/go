@@ -42,7 +42,9 @@ NOTE: If you want reinstall/update make sure to clear cache first.
  - MOBILE: **Menu -> Settings -> Site settings -> All sites -> maksimkorzh.github.io -> [trash icon]**
  - MOBILE: Reload page
 
-# Support
+ Now you can uninstall PWA from desktop/mobile device and install it again.
+
+# Support / Developers
 Please use github <a href="https://github.com/maksimKorzh/go/issues">issues</a> to communicate.
 
 # Donations
