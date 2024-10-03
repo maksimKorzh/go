@@ -33,14 +33,10 @@ quite severe.
 
 NOTE: If you want reinstall/update make sure to clear cache first.
 <br><br>
-DESKTOP:<br>
- - **DevTools -> Application -> Service workers -> Unregister**
- - **DevTools -> Network -> Disable cache**
- - Reload page
+ - DESKTOP: **DevTools -> Application -> Service workers -> Unregister**
+ - DESKTOP: **DevTools -> Network -> Disable cache**
 <br><br>
-MOBILE:<br>
- - **Menu -> Settings -> Site settings -> All sites -> maksimkorzh.github.io -> [trash icon]**
- - Reload page
+ - MOBILE: **Menu -> Settings -> Site settings -> All sites -> maksimkorzh.github.io -> [trash icon]**
 
 # Support
 Please use github <a href="https://github.com/maksimKorzh/go/issues">issues</a> to communicate.
