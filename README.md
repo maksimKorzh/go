@@ -32,7 +32,7 @@ quite severe.
  - MOBILE: **Menu -> Add to home screen -> Install**
 
 NOTE: If you want reinstall/update make sure to clear cache first.
-<br><br>
+<br>
  - DESKTOP: **DevTools -> Application -> Service workers -> Unregister**
  - DESKTOP: **DevTools -> Network -> Disable cache**
 <br><br>
