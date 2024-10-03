@@ -30,15 +30,15 @@ quite severe.
  - Open Chrome browser
  - DESKTOP: **Menu -> Cast, save and share -> Install Game Of Go**
  - MOBILE: **Menu -> Add to home screen -> Install**
-<br>
+
 NOTE: If you want reinstall/update make sure to clear cache first<br><br>
 DESKTOP:<br>
-1. **DevTools -> Application -> Service workers -> Unregister**<br>
-2. **DevTools -> Network -> Disable cache**
-3. Reload page<br><br>
+ - **DevTools -> Application -> Service workers -> Unregister**
+ - **DevTools -> Network -> Disable cache**
+ - Reload page<br><br>
 MOBILE:<br>
-1. **Menu -> Settings -> Site settings -> All sites -> maksimkorzh.github.io -> [trash icon]**
-2. Reload page<br><br>
+ - **Menu -> Settings -> Site settings -> All sites -> maksimkorzh.github.io -> [trash icon]**
+ - Reload page
 
 # Support
 Please use github <a href="https://github.com/maksimKorzh/go/issues">issues</a> to communicate.
