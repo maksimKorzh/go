@@ -2,7 +2,7 @@
 A Go/Weiqi/Baduk Progressive Web Application
 
 # What is this?
-This is a Go sparring partner for single digit kyu and
+This is a Go sparring AI partner for single digit kyu and
 low dan players to practice and improve their Go skills.
 
 # What is the AI behind it?
