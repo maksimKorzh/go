@@ -16,9 +16,9 @@ Using bigger (stronger) nets is possible but it takes
 Another reson is that latest networks are simply too strong.
 
 # How strong is it?
-Dan level is around FOX 1-2 dan, it beats Pachi [1sec/move], CrazyStone [1d] and looses to CrazyStone [2d]<br>
-Kyu level is around FOX 6-5 kyu, it's around of GnuGo 3.8 strength.<br>
-Its "understanding" is around FOX 5 dan but it often dies due to lack of
+Dan level is around FOX 1 dan, it beats Pachi [1sec/move], CrazyStone [1d] and looses to CrazyStone [2d]<br>
+Kyu level is around FOX 5 kyu, it's around of GnuGo 3.8 strength.<br>
+Its "understanding" is around FOX 2 dan but it often dies due to lack of
 tactical reading, however against weaker players its tesuji moves feel
 quite severe.
 
