@@ -112,6 +112,17 @@ const Goban = function(params) {
     }
   }
 
+  function printBoard() {
+    let pos = '';
+    let chars = '.XO    #';
+    for (let row = 0; row < size; row++) {
+      for (let col = 0; col < size; col++) {
+        let sq = row * size + col;
+        pos += ' ' + chars[board[sq]];
+      } pos += '\n'
+    } console.log(pos);
+  }
+
   function setStone(sq, color, user) { /* Place stone on board */
     if (board[sq] != EMPTY) {
       if (user) alert("Illegal move!");
@@ -144,17 +155,6 @@ const Goban = function(params) {
     });
     moveCount = history.length-1;
     return true;
-  }
-
-  function setHandicap(stones) {
-    if (stones < 0 || stones > 9) return;
-    let handicap = stones;
-    let handicapStones = [88, 100, 340, 352, 214, 226, 94, 346, 220].slice(0, handicap);
-    for (let sq of handicapStones) {
-      goban.play(sq, goban.BLACK);
-      if (sq != handicapStones[handicap-1]) goban.pass();
-      goban.refresh();
-    }
   }
 
   function pass() {
@@ -215,13 +215,12 @@ const Goban = function(params) {
       if (board[sq+offset] == OFFBOARD) continue;
       if (board[sq+offset] == EMPTY) return 0;
       if (eyeColor == -1) {
-        eyeColor = board[sq+offset];
+        if (board[sq+offset] <= 2) eyeColor = board[sq+offset];
+        else eyeColor = board[sq+offset] - MARKER;
         otherColor = 3-eyeColor;
       } else if (board[sq+offset] == otherColor)
         return 0;
-    }
-    if (eyeColor > 2) eyeColor -= MARKER;
-    return eyeColor;
+    } return eyeColor;
   }
 
   function loadHistoryMove() {
@@ -340,6 +339,7 @@ const Goban = function(params) {
     importSgf: function(sgf) { return loadSgf(sgf); },
     exportSgf: function() { return saveSgf(); },
     position: function() { return board; },
+    print: function() { return printBoard(); },
     setKomi: function(komiVal) { komi = komiVal; },
     komi: function() { return komi; },
     history: function() { return history; },
@@ -349,7 +349,6 @@ const Goban = function(params) {
     liberties: function() { return liberties; },
     restore: function() { return restoreBoard(); },
     play: function(sq, color, user) { return setStone(sq, color, user); },
-    handicap: function(stones) { return setHandicap(stones); },
     pass: function() { return pass(); },
     refresh: function() { return drawBoard(); },
     undoMove: function() { return undoMove(); },
