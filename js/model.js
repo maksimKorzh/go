@@ -8,10 +8,45 @@ var computerSide = 2;
 var level = 1; // Dan = 1; Kyu = 0
 
 // QUERY MODEL
+function enableLadders(bin_inputs) { // Calls f on each location that is part of an inescapable atari, or a group that can be put into inescapable atari
+  let gobanCopy = goban.copy();
+  for (let y = 0; y < 19; y++) {
+    for (let x = 0; x < 19; x++) {
+      sq_19x19 = (19 * y + x);
+      sq_21x21 = (21 * (y+1) + (x+1))
+      let color = goban.position()[sq_21x21];
+      if (color == goban.BLACK || color == goban.WHITE) {
+        let libs_black = 0;
+        let libs_white = 0;
+        goban.count(sq_21x21, goban.BLACK);
+        libs_black = goban.liberties().length;
+        goban.restore();
+        goban.count(sq_21x21, goban.WHITE);
+        libs_white = goban.liberties().length;
+        goban.restore();
+        if (libs_black == 1 || libs_black == 2 || libs_white == 1 || libs_white == 2) {
+          let laddered = gobanCopy.ladder(sq_21x21, color);
+          if (laddered == 1) {
+            bin_inputs[inputBufferChannels * sq_19x19 + 14] = 1.0;
+            bin_inputs[inputBufferChannels * sq_19x19 + 15] = 1.0;
+            bin_inputs[inputBufferChannels * sq_19x19 + 16] = 1.0;
+          }
+          else if (laddered > 1) {
+            let col = laddered % goban.size();
+            let row = Math.floor(laddered / goban.size());
+            let workingMove = 19 * (row-1) + (col-1);
+            bin_inputs[inputBufferChannels * workingMove + 17] = 1.0;
+          }
+        }
+      }
+    }
+  }
+}
+
 function inputTensor() { /* Convert GUI goban.position() to katago model input tensor */
   let katago = computerSide;
   let player = (3-computerSide);
-  if (level == 0) {
+  if (level == 0) { // weird hack I accidentally discovered that makes net playing much weaker
     player = computerSide;
     katago = (3-computerSide);
   }
@@ -74,7 +109,8 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
         }
       }
     }
-  }
+  }  
+  enableLadders(bin_inputs);
   let selfKomi = (computerSide == goban.WHITE ? goban.komi()+1 : -goban.komi());
   global_inputs[5] = selfKomi / 20.0
   return bin_inputs;

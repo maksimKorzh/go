@@ -29,19 +29,31 @@
       width: 100%;
       flex-direction: column;
     }
+    button {
+     -webkit-tap-highlight-color: transparent;
+      width: 100%;
+      font-size: 30px;
+      background-color: white;
+      color: black;
+      cursor: pointer;
+    }
+    button:active {
+      background-color: black;
+      color: white;
+    }
   </style>
   <div id="controls">
-    <button onclick="window.location.reload()" style="width: 100%; font-size: 30px;">GO</button>
-    <button onclick="goban.pass();" style="width: 100%; font-size: 30px;">PASS</button>
-    <button onclick="play(1)" style="width: 100%; font-size: 30px;">MOVE</button>
-    <button onclick="goban.undoMove()" style="width: 100%; font-size: 30px;">UNDO</button>
-    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY'" style="width: 100%; font-size: 30px;">MODE</button>
-    <button onclick="eval();" style="width: 100%; font-size: 30px;">EVAL</button>
-    <button onclick="downloadSgf()" style="width: 100%; font-size: 30px;">SAVE</button>
-    <button onclick="level ^= 1; document.getElementById('stats').innerHTML = level ? 'AI (dan)' : 'AI (kyu)'" style="width: 100%; font-size: 30px;">AI</button>
+    <button onclick="window.location.reload()">GO</button>
+    <button onclick="goban.pass();">PASS</button>
+    <button onclick="play(1)">MOVE</button>
+    <button onclick="goban.undoMove()">UNDO</button>
+    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY'">MODE</button>
+    <button onclick="eval();">EVAL</button>
+    <button onclick="downloadSgf()">SAVE</button>
+    <button onclick="level ^= 1; document.getElementById('stats').innerHTML = level ? 'AI (dan)' : 'AI (kyu)'">AI</button>
   </div>
   <div class="container"><div id="goban"></div></div>
-  <div id="stats" style="font-size: 40px; margin-bottom: 2%;">AI (dan), Chinese rules, Komi 7.5</div>
+  <div id="stats" style="font-size: 38px; margin-bottom: 2%;">AI (dan), Chinese rules, Komi 7.5</div>
   <script src="js/tensorflow.js"></script>
   <script src="js/goban.js"></script>
   <script src="js/book.js"></script>
@@ -62,7 +74,7 @@
     const goban = new Goban({
       'size': 19,
       'response': function() { play(); }
-    });
+    }); goban.init();
 
     function downloadSgf() {
       const element = document.createElement('a');

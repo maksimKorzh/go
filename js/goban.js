@@ -110,6 +110,32 @@ const Goban = function(params) {
         default: board[sq] = 0;
       }
     }
+
+    /*
+    // debug
+    board = [
+      7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 7,
+      7, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 2, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+      7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+    ]*/
   }
 
   function printBoard() {
@@ -223,6 +249,37 @@ const Goban = function(params) {
     } return eyeColor;
   }
 
+  function isLadder(sq, color) {
+    let libs = [];
+    count(sq, color);
+    libs = JSON.parse(JSON.stringify(liberties));
+    restoreBoard();
+    if (libs.length == 0) return 1;
+    if (libs.length == 1) {
+      board[libs[0]] = color;
+      if (isLadder(libs[0], color)) return 1;
+      board[libs[0]] = EMPTY;
+    }
+    if (libs.length == 2) {
+      for (let move of libs) {
+        board[move] = (3-color);
+        if (isLadder(sq, color)) return move;
+        board[move] = EMPTY;
+      }
+    }
+    return 0;
+  }
+
+  function copyGoban() {
+    newGoban = new Goban();
+    newGoban.setSize(size);
+    let move = history[moveCount];
+    newGoban.setPosition(move.board);
+    newGoban.setSide(move.side);
+    newGoban.setKo(move.ko);
+    return newGoban;
+  }
+
   function loadHistoryMove() {
     let move = history[moveCount];
     board = JSON.parse(move.board);
@@ -291,8 +348,8 @@ const Goban = function(params) {
   function saveSgf() {
     let sgf = '(';
     for (let item of history.slice(1, history.length)) {
-      let col = item.move % 21;
-      let row = Math.floor(item.move / 21);
+      let col = item.move % size;
+      let row = Math.floor(item.move / size);
       let color = item.side == BLACK ? 'W' : 'B';
       let coords = ' abcdefghijklmnopqrs';
       let move = coords[col] + coords[row];
@@ -307,7 +364,7 @@ const Goban = function(params) {
     canvas.width = window.innerWidth-20;
     canvas.height = canvas.width;
     drawBoard();
-    document.getElementById('controls').style = 'display: flex; height: 6vh; width: ' + (canvas.width+3) + 'px;';
+    document.getElementById('controls').style = 'display: flex; height: 6vh; gap: 5px; width: ' + (canvas.width+4) + 'px;';
   }
 
   function init() { /* Init goban module */
@@ -333,18 +390,25 @@ const Goban = function(params) {
   
   // PUBLIC API
   return {
-    init: init(),
+    init: function() { return init(); },
     BLACK: BLACK,
     WHITE: WHITE,
+    copy: function() { return copyGoban(); },
     importSgf: function(sgf) { return loadSgf(sgf); },
     exportSgf: function() { return saveSgf(); },
+    ladder: function(sq, color) { return isLadder(sq, color); },
     position: function() { return board; },
+    setPosition: function(pos) { board = JSON.parse(pos); },
     print: function() { return printBoard(); },
     setKomi: function(komiVal) { komi = komiVal; },
     komi: function() { return komi; },
     history: function() { return history; },
     side: function() { return side; },
+    setSide: function(s) { side = s; },
+    size: function() { return size; },
+    setSize: function(s) { size = s; },
     ko: function() { return ko; },
+    setKo: function(k) { ko = k; },
     count: function(sq, color) { return count(sq, color); },
     liberties: function() { return liberties; },
     restore: function() { return restoreBoard(); },
