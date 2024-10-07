@@ -47,7 +47,9 @@ const Goban = function(params) {
       ctx.lineTo(canvas.width - offset, y);
       ctx.moveTo(x, offset);
       ctx.lineTo(x, canvas.height - offset);
-    };ctx.stroke();
+    };
+    ctx.lineWidth = 1;
+    ctx.stroke();
     for (let row = 0; row < size-2; row++) {
       for (let col = 0; col < size-2; col++) {
         let sq = (row+1) * size + (col+1);
@@ -61,6 +63,7 @@ const Goban = function(params) {
           ctx.arc(col * cell+(cell/4)*2, row * cell +(cell/4)*2, cell / 6 - 2, 0, 2 * Math.PI);
           ctx.fillStyle = 'black';
           ctx.fill();
+          ctx.lineWidth = 1;
           ctx.stroke();
         }
         if (board[sq] == 7) continue;
@@ -70,6 +73,7 @@ const Goban = function(params) {
           ctx.arc(col * cell + cell / 2, row * cell + cell / 2, cell / 2 - 2, 0, 2 * Math.PI);
           ctx.fillStyle = color;
           ctx.fill();
+          ctx.lineWidth = (color == "white") ? 2 : 1;
           ctx.stroke();
         }
         if (sq == userMove) {
@@ -78,6 +82,7 @@ const Goban = function(params) {
           ctx.arc(col * cell+(cell/4)*2, row * cell +(cell/4)*2, cell / 5 - 2, 0, 2 * Math.PI);
           ctx.fillStyle = color;
           ctx.fill();
+          ctx.lineWidth = 1;
           ctx.stroke();
         }
       }
