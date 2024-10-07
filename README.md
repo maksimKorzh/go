@@ -31,7 +31,11 @@ quite severe.
  - DESKTOP: **Menu -> Cast, save and share -> Install Game Of Go**
  - MOBILE: **Menu -> Add to home screen -> Install**
 
-NOTE: If you want reinstall/update make sure to clear cache first.
+# How to update PWA to latest version?
+PWAs DO NOT get updated automatically when you refresh page because the core idea of PWA
+is to work as a stand-alone offline app and for the that sake chache is used, so without
+clearing the cache manually there would be no actual update, hence you need to make sure
+you've cleared the cache on your device. This is how it can be achieved:
 <br>
  - DESKTOP: Load page: **https://maksimkorzh.github.io/go/**
  - DESKTOP: **DevTools -> Application -> Service workers -> Unregister**
