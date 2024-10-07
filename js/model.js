@@ -46,10 +46,6 @@ function enableLadders(bin_inputs) { // Calls f on each location that is part of
 function inputTensor() { /* Convert GUI goban.position() to katago model input tensor */
   let katago = computerSide;
   let player = (3-computerSide);
-  if (level == 0) { // weird hack I accidentally discovered that makes net playing much weaker
-    player = computerSide;
-    katago = (3-computerSide);
-  }
   const bin_inputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
   for (let y = 0; y < 19; y++) {
     for (let x = 0; x < 19; x++) {
@@ -131,15 +127,16 @@ async function play(button) { /* Play best move */
   const bin_inputs = inputTensor();
   try {
     tf.setBackend("cpu");
-    const model = await tf.loadGraphModel("./model/model.json");
+    let path = level ? "./model/dan/model.json" : "./model/kyu/model.json";
+    const model = await tf.loadGraphModel(path);
     const results = await model.executeAsync({
         "swa_model/bin_inputs": tf.tensor(bin_inputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
         "swa_model/global_inputs": tf.tensor(global_inputs, [batches, inputGlobalBufferChannels], 'float32')
     });
-    const policyTensor = results[3];
+    const policyTensor = level ? results[1]: results[3];
     const policyArray = await policyTensor.slice([0, 0, 0], [1, 1, 361]).array();
     const flatPolicyArray = policyArray[0][0];
-    let scores = results[1];
+    let scores = level ? results[2] : results[1];
     let flatScores = scores.dataSync();
     let copyPolicy = JSON.parse(JSON.stringify(flatPolicyArray));
     let topPolicies = copyPolicy.sort((a, b) => b - a).slice(0, 5);
@@ -152,12 +149,6 @@ async function play(button) { /* Play best move */
       let scoreLead = (flatScores[2]*20).toFixed(2);
       let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
       let playerColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
-      if (level == 0) {
-        scoreLead -= (20+goban.komi());
-        scoreLead = scoreLead.toFixed(2);
-        katagoColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
-        playerColor = computerSide == goban.BLACK ? 'Black' : 'White';
-      }
       document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
       let bestMove = 21 * (row_19+1) + (col_19+1);
       if (!goban.play(bestMove, computerSide, false)) {
@@ -177,12 +168,12 @@ async function eval() { /* Estimate score */
   const bin_inputs = inputTensor();
   try {
     tf.setBackend("cpu");
-    const model = await tf.loadGraphModel("./model/model.json");
+    const model = await tf.loadGraphModel("./model/dan/model.json");
     const results = await model.executeAsync({
         "swa_model/bin_inputs": tf.tensor(bin_inputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
         "swa_model/global_inputs": tf.tensor(global_inputs, [batches, inputGlobalBufferChannels], 'float32')
     });
-    let scores = results[1];
+    let scores = results[2];
     let flatScores = scores.dataSync(2);
     let scoreLead = (flatScores[2]*20).toFixed(2);
     let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
