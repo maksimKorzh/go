@@ -6,9 +6,9 @@ This is a Go sparring AI partner for single digit kyu and
 low dan players to practice and improve their Go skills.
 
 # What is the AI behind it?
-A small early 6 block KataGo neural net, around 4Mb in size (kata1-b6c96-s175395328-d26788732)
-stripped off the KataGo engine itself, there is no MCTS or any other search algorithm involved,
-so you play against the bare net.
+KYU level (6 block net, ~4MB): kata1-b6c96-s175395328-d26788732)<br>
+DAN level:(10 block net ~11MB): kata1-b10c128-s1141046784-d204142634<br>
+There is no MCTS or any other search algorithm involved, so you play against the bare net.
 
 # Why not the latest KataGo net?
 Using bigger (stronger) nets is possible but it takes
@@ -16,11 +16,8 @@ Using bigger (stronger) nets is possible but it takes
 Another reson is that latest networks are simply too strong.
 
 # How strong is it?
-Dan level is around FOX 1 dan, it beats CrazyStone [1d] and looses to CrazyStone [2d]<br>
-Kyu level is around FOX 5 kyu, it's around of GnuGo 3.8 strength.<br>
-Its "understanding" is around FOX 2 dan but it often dies due to lack of
-tactical reading, however against weaker players its tesuji moves feel
-quite severe.
+Dan level is around OGS 1 dan<br>
+Kyu level is around OGS 5 kyu<br>
 
 # How can I use it?
  - play in <a href="https://maksimkorzh.github.io/go/">web browser</a> on desktop or mobile device
@@ -47,6 +44,11 @@ you've cleared the cache on your device. This is how it can be achieved:
  - MOBILE: Reload page
 
  Now you can uninstall PWA from desktop/mobile device and install it again.
+
+# Known issues
+Since there's no MCTS search, a bare net is vulnerable to tacical blunders,
+it should not fall into the obvious ladder but a ladder where one stone is
+in atari might run thinking it can be saved.
 
 # Support / Developers
 Please use github <a href="https://github.com/maksimKorzh/go/issues">issues</a> to communicate.
