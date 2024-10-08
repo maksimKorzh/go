@@ -6,8 +6,8 @@ This is a Go sparring AI partner for single digit kyu and
 low dan players to practice and improve their Go skills.
 
 # What is the AI behind it?
-KYU level (6 block net, ~4MB): kata1-b6c96-s175395328-d26788732)<br>
-DAN level:(10 block net ~11MB): kata1-b10c128-s1141046784-d204142634<br>
+KYU level (6 block net, ~4MB): kata1-b6c96-s175395328-d26788732<br>
+DAN level:(10 block net ~11MB): kata1-b10c128-s1141046784-d204142634<br><br>
 There is no MCTS or any other search algorithm involved, so you play against the bare net.
 
 # Why not the latest KataGo net?
@@ -48,7 +48,8 @@ you've cleared the cache on your device. This is how it can be achieved:
 # Known issues
 Since there's no MCTS search, a bare net is vulnerable to tacical blunders,
 it should not fall into the obvious ladder but a ladder where one stone is
-in atari might run thinking it can be saved.
+in atari might run thinking it can be saved. It may also think it's killing a group
+while on the real deal it's dead, this results in score evaluation jumps.
 
 # Support / Developers
 Please use github <a href="https://github.com/maksimKorzh/go/issues">issues</a> to communicate.
