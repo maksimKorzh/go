@@ -54,16 +54,14 @@ so here's the setup I use to run this app as KGS bot:
  - **java -jar kgsGtp.jar config.ini**
 
 # Example of KGS 'config.ini'
-```js
-name=your_kgs_bot_account
-password=password
-room=Computer Go
-mode=custom
-gameNotes=Bare KataGo net with no MCTS, around 1d strength
-talk=direct chat wouldresponse with this message
-verbose=t
-engine=node /path/to/go/gtp/gtp.js
-```
+    name=your_kgs_bot_account
+    password=password
+    room=Computer Go
+    mode=custom
+    gameNotes=Bare KataGo net with no MCTS, around 1d strength
+    talk=direct chat wouldresponse with this message
+    verbose=t
+    engine=node /path/to/go/gtp/gtp.js
 
 # Known issues
 Since there's no MCTS search, a bare net is vulnerable to tacical blunders,
