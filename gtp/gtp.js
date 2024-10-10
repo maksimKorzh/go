@@ -28,6 +28,11 @@ const Goban = function(params) {
   var moveCount = 0;
 
   function clearBoard() { /* Empty board, set offboard squares */
+    board = [];
+    history = [];
+    liberties = [];
+    block = [];
+    ko = EMPTY;
     for (let sq = 0; sq < size ** 2; sq++) {
       switch (true) {
         case (sq < size):
