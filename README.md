@@ -54,7 +54,7 @@ so here's the setup I use to run this app as KGS bot:
  - **java -jar kgsGtp.jar config.ini**
 
 # Example of KGS 'config.ini'
-    name=your_kgs_bot_account
+    name=username
     password=password
     room=Computer Go
     mode=custom
