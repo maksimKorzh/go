@@ -44,7 +44,7 @@
   </style>
   <div id="controls">
     <button onclick="window.location.reload()">GO</button>
-    <button onclick="goban.pass(); if (editMode == 0) play();">PASS</button>
+    <button onclick="goban.pass();">PASS</button>
     <button onclick="play(1)">MOVE</button>
     <button onclick="goban.undoMove()">UNDO</button>
     <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY'">MODE</button>
