@@ -189,7 +189,6 @@ const Goban = function(params) {
     side = move.side;
     ko = move.ko;
     userMove = move.move;
-    drawBoard();
   }
 
   function undoMove() {
@@ -456,7 +455,8 @@ async function play(button) { /* Play best move */
       if (!goban.play(bestMove, computerSide, false)) {
         if (move == 0) continue;
         goban.pass();
-        return 0;
+        console.log('= PASS\n');
+        return;
       }
       console.log('= ' + 'ABCDEFGHJKLMNOPQRST'[col_19] + (goban.size()-row_19-2) + '\n'); // skip unsupported commands
       break;
@@ -479,19 +479,19 @@ var gtp = readline.createInterface({
 // gtp loop
 gtp.on('line', function(command){
   if (command == 'quit') process.exit();
-  else if (command.includes('name')) console.log('= PWAGoApp\n');
+  else if (command.includes('name')) console.log('= PWAGoBot\n');
   else if (command.includes('protocol_version')) console.log('= 2\n');
   else if (command.includes('version')) console.log('= 1.0\n');
-  else if (command.includes('list_commands')) console.log('= protocol_version\n');
+  else if (command.includes('list_commands')) console.log('= protocol_version\nclear_board\n');
   else if (command.includes('boardsize')) console.log('=\n'); // set up board size if supported
   else if (command.includes('clear_board')) { goban.init(); console.log('=\n'); }
   else if (command.includes('showboard')) { console.log('= '); goban.print(); }
   else if (command.includes('play')) {
-    let color = (command.split(' ')[1] == 'B') ? goban.BLACK : goban.WHITE;
-    let coord = command.split(' ')[2];
-    if (coord == 'PASS') goban.pass();
+    let color = (command.split(' ')[1].toLowerCase() == 'b') ? goban.BLACK : goban.WHITE;
+    let coord = command.split(' ')[2].toLowerCase();
+    if (coord == 'pass') goban.pass();
     else {
-      let col = ' ABCDEFGHJKLMNOPQRST'.indexOf(coord[0]);
+      let col = ' abcdefghjklmnopqrst'.indexOf(coord[0]);
       let row = goban.size() - parseInt(coord.slice(1))-1;
       let sq = row * goban.size() + col;
       goban.play(sq, color);
