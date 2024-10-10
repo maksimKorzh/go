@@ -12,8 +12,8 @@ function enableLadders(bin_inputs) { // Calls f on each location that is part of
   let gobanCopy = goban.copy();
   for (let y = 0; y < 19; y++) {
     for (let x = 0; x < 19; x++) {
-      sq_19x19 = (19 * y + x);
-      sq_21x21 = (21 * (y+1) + (x+1))
+      let sq_19x19 = (19 * y + x);
+      let sq_21x21 = (21 * (y+1) + (x+1))
       let color = goban.position()[sq_21x21];
       if (color == goban.BLACK || color == goban.WHITE) {
         let libs_black = 0;
@@ -49,8 +49,8 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
   const bin_inputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
   for (let y = 0; y < 19; y++) {
     for (let x = 0; x < 19; x++) {
-      sq_19x19 = (19 * y + x);
-      sq_21x21 = (21 * (y+1) + (x+1))
+      let sq_19x19 = (19 * y + x);
+      let sq_21x21 = (21 * (y+1) + (x+1))
       bin_inputs[inputBufferChannels * sq_19x19 + 0] = 1.0;
       if (goban.position()[sq_21x21] == katago) bin_inputs[inputBufferChannels * sq_19x19 + 1] = 1.0;
       if (goban.position()[sq_21x21] == player) bin_inputs[inputBufferChannels * sq_19x19 + 2] = 1.0;
@@ -69,7 +69,12 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
       }
     }
   }
-  if (sq_21x21 == goban.ko()) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
+  if (goban.ko() != goban.EMPTY) {
+    let col = (goban.ko() % 21)-1;
+    let row = Math.floor(goban.ko() / 21)-1;
+    let sq_19x19 = row * 19 + col;
+    bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
+  }
   let moveIndex = goban.history().length-1;
   if (moveIndex >= 1 && goban.history()[moveIndex-1].side == player) {
     let prevLoc1 = goban.history()[moveIndex-1].move;

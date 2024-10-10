@@ -176,7 +176,7 @@ const Goban = function(params) {
   }
 
   function count(sq, color) { /* Count group liberties */
-    stone = board[sq];
+    let stone = board[sq];
     if (stone == OFFBOARD) return;
     if (stone && (stone & color) && (stone & MARKER) == 0) {
       block.push(sq);
@@ -250,7 +250,7 @@ const Goban = function(params) {
   }
 
   function copyGoban() {
-    newGoban = new Goban();
+    let newGoban = new Goban();
     newGoban.setSize(size);
     let move = history[moveCount];
     newGoban.setPosition(move.board);
