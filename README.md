@@ -53,7 +53,7 @@ so here's the setup I use to run this app as KGS bot:
  - **cd /path/to/kgsGtp/**
  - **java -jar kgsGtp.jar config.ini**
 <br>
-```txt
+```js
 // example 'config.ini'
 name=your_kgs_bot_account
 password=password
