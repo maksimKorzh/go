@@ -52,9 +52,9 @@ so here's the setup I use to run this app as KGS bot:
  - **python3 -m http.server** this is needed to host NN weights
  - **cd /path/to/kgsGtp/**
  - **java -jar kgsGtp.jar config.ini**
-<br>
+
+# Example of KGS 'config.ini'
 ```js
-// example 'config.ini'
 name=your_kgs_bot_account
 password=password
 room=Computer Go
