@@ -45,13 +45,14 @@ you've cleared the cache on your device. This is how it can be achieved:
 
  Now you can uninstall PWA from desktop/mobile device and install it again.
 
-# How to run it as KGS bot (EXPERIMENTAL)
+# How to run it as a KGS bot (EXPERIMENTAL)
 The way I do it is weird and really far from best practices, however it works,
-so here's the setup I use to use this app as KGS bot:
+so here's the setup I use to run this app as KGS bot:
  - **cd go**
  - **python3 -m http.server** this is needed to host NN weights
  - **cd /path/to/kgsGtp/**
- - **java -jar kgsGtp.jar config.ini
+ - **java -jar kgsGtp.jar config.ini**
+
     // example 'config.ini'
     name=your_kgs_bot_account
     password=password
