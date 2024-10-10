@@ -386,7 +386,12 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
       }
     }
   }
-  if (goban.ko() > 0) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
+  if (goban.ko() != goban.EMPTY) {
+    let col = (goban.ko() % 21)-1;
+    let row = Math.floor(goban.ko() / 21)-1;
+    let sq_19x19 = row * 19 + col;
+    bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
+  }
   let moveIndex = goban.history().length-1;
   if (moveIndex >= 1 && goban.history()[moveIndex-1].side == player) {
     let prevLoc1 = goban.history()[moveIndex-1].move;
