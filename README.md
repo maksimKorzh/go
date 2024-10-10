@@ -52,15 +52,18 @@ so here's the setup I use to run this app as KGS bot:
  - **python3 -m http.server** this is needed to host NN weights
  - **cd /path/to/kgsGtp/**
  - **java -jar kgsGtp.jar config.ini**
-    // example 'config.ini'
-    name=your_kgs_bot_account
-    password=password
-    room=Computer Go
-    mode=custom
-    gameNotes=Bare KataGo net with no MCTS, around 1d strength
-    talk=direct chat wouldresponse with this message
-    verbose=t
-    engine=node /path/to/go/gtp/gtp.js
+<br>
+```txt
+// example 'config.ini'
+name=your_kgs_bot_account
+password=password
+room=Computer Go
+mode=custom
+gameNotes=Bare KataGo net with no MCTS, around 1d strength
+talk=direct chat wouldresponse with this message
+verbose=t
+engine=node /path/to/go/gtp/gtp.js
+```
 
 # Known issues
 Since there's no MCTS search, a bare net is vulnerable to tacical blunders,
