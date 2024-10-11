@@ -131,7 +131,12 @@ async function play(button) { /* Play best move */
   }
   const bin_inputs = inputTensor();
   try {
-    tf.setBackend("cpu");
+    tf.setBackend('webgl').then(() => {
+      if (tf.getBackend() !== 'webgl') {
+        console.log('WebGL not available, falling back to CPU');
+        tf.setBackend('cpu'); // Manually set to CPU if WebGL is unavailable
+      } else console.log('Using WebGL as a backend');
+    });
     let path = level ? "./model/dan/model.json" : "./model/kyu/model.json";
     const model = await tf.loadGraphModel(path);
     const results = await model.executeAsync({
