@@ -392,35 +392,36 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
     let sq_19x19 = row * 19 + col;
     bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
   }
+
   let moveIndex = goban.history().length-1;
   if (moveIndex >= 1 && goban.history()[moveIndex-1].side == player) {
     let prevLoc1 = goban.history()[moveIndex-1].move;
-    let x = prevLoc1 % 21;
-    let y = Math.floor(prevLoc1 / 21);
+    let x = (prevLoc1 % 21)-1;
+    let y = (Math.floor(prevLoc1 / 21))-1;
     if (prevLoc1) bin_inputs[inputBufferChannels * (19 * y + x) + 9] = 1.0;
     else global_inputs[0] = 1.0;
     if (moveIndex >= 2 && goban.history()[moveIndex-2].side == katago) {
       let prevLoc2 = goban.history()[moveIndex-2].move;
-      let x = prevLoc2 % 21;
-      let y = Math.floor(prevLoc2 / 21);
+      let x = (prevLoc2 % 21)-1;
+      let y = (Math.floor(prevLoc2 / 21))-1;
       if (prevLoc2) bin_inputs[inputBufferChannels * (19 * y + x) + 10] = 1.0;
       else global_inputs[1] = 1.0;
       if (moveIndex >= 3 && goban.history()[moveIndex-3].side == player) {
         let prevLoc3 = goban.history()[moveIndex-3].move;
-        let x = prevLoc3 % 21;
-        let y = Math.floor(prevLoc3 / 21);
+        let x = (prevLoc3 % 21)-1;
+        let y = (Math.floor(prevLoc3 / 21))-1;
         if (prevLoc3) bin_inputs[inputBufferChannels * (19 * y + x) + 11] = 1.0;
         else global_inputs[2] = 1.0;
         if (moveIndex >= 4 && goban.history()[moveIndex-4].side == katago) {
           let prevLoc4 = goban.history()[moveIndex-4].move;
-          let x = prevLoc4 % 21;
-          let y = Math.floor(prevLoc4 / 21);
+          let x = (prevLoc4 % 21)-1;
+          let y = (Math.floor(prevLoc4 / 21))-1;
           if (prevLoc4) bin_inputs[inputBufferChannels * (19 * y + x) + 12] = 1.0;
           else global_inputs[3] = 1.0;
           if (moveIndex >= 5 && goban.history()[moveIndex-5].side == player) {
             let prevLoc5 = goban.history()[moveIndex-5].move;
-            let x = prevLoc5 % 21;
-            let y = Math.floor(prevLoc5 / 21);
+            let x = (prevLoc5 % 21)-1;
+            let y = (Math.floor(prevLoc5 / 21))-1;
             if (prevLoc5) bin_inputs[inputBufferChannels * (19 * y + x) + 13] = 1.0;
             else global_inputs[4] = 1.0;
           }
@@ -476,7 +477,7 @@ async function play(button) { /* Play best move */
   }
 }
 
-const goban = new Goban({'size': 19})
+var goban = new Goban({'size': 19})
 goban.init();
 
 // create CLI interface
@@ -494,7 +495,7 @@ gtp.on('line', function(command){
   else if (command.includes('version')) console.log('= 1.0\n');
   else if (command.includes('list_commands')) console.log('= protocol_version\nclear_board\n');
   else if (command.includes('boardsize')) console.log('=\n'); // set up board size if supported
-  else if (command.includes('clear_board')) { goban.init(); console.log('=\n'); }
+  else if (command.includes('clear_board')) { goban = new Goban({'size': 19}); goban.init(); console.log('=\n'); }
   else if (command.includes('showboard')) { console.log('= '); goban.print(); }
   else if (command.includes('play')) {
     let color = (command.split(' ')[1].toLowerCase() == 'b') ? goban.BLACK : goban.WHITE;
