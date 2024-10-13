@@ -44,9 +44,9 @@
   </style>
   <div id="controls">
     <button onclick="window.location.reload()">GO</button>
-    <button onclick="goban.pass();">PASS</button>
-    <button onclick="play(1)">MOVE</button>
-    <button onclick="goban.undoMove()">UNDO</button>
+    <button onclick="passMove();">PASS</button>
+    <button onclick="playMove(1)">MOVE</button>
+    <button onclick="undoMove(); drawBoard();">UNDO</button>
     <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY'">MODE</button>
     <button onclick="eval();">EVAL</button>
     <button onclick="downloadSgf()">SAVE</button>
@@ -57,34 +57,7 @@
   <script src="js/tensorflow.js"></script>
   <script src="js/goban.js"></script>
   <script src="js/book.js"></script>
-  <script src="js/model.js"></script>
-  <script>
-    // Cache PWA
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/go/service-worker.js')
-        .then((registration) => {
-          console.log('Service Worker registered with scope:', registration.scope);
-        }).catch((error) => {
-          console.error('Service Worker registration failed:', error);
-        });
-    }
-
-    var editMode = 0;
-
-    const goban = new Goban({
-      'size': 19,
-      'response': function() { play(); }
-    }); goban.init();
-
-    function downloadSgf() {
-      const element = document.createElement('a');
-      const file = new Blob([goban.exportSgf()], { type: 'text/plain' });
-      element.href = URL.createObjectURL(file);
-      element.download = 'game.sgf';
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-    }
-  </script>
+  <script src="js/gui.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

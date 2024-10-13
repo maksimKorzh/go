@@ -1,405 +1,454 @@
-/*****************************************\
-  =======================================
- 
-                 Gobang JS
+const batches = 1;
+const inputBufferLength = 19 * 19;
+const inputBufferChannels = 22;
+const inputGlobalBufferChannels = 19;
+const globalInputs = new Float32Array(batches * inputGlobalBufferChannels);
 
-                    by
+const EMPTY = 0
+const BLACK = 1
+const WHITE = 2
+const MARKER = 4
+const OFFBOARD = 7
+const LIBERTY = 8
 
-             Code Monkey King
+var board = [];
+var moveHistory = [];
+var komi = 7.5;
+var size = 21;
+var side = BLACK;
+var liberties = [];
+var block = [];
+var ko = EMPTY;
+var bestMove = EMPTY;
+var userMove = EMPTY;
+var moveCount = EMPTY;
+var level = 1;
 
-  =======================================
-\*****************************************/
-
-const Goban = function(params) {
-  // CANVAS
-  var canvas, ctx, cell;
-
-  // DATA
-  const EMPTY = 0
-  const BLACK = 1
-  const WHITE = 2
-  const MARKER = 4
-  const OFFBOARD = 7
-  const LIBERTY = 8
-
-  var board = [];
-  var history = [];
-  var komi = 7.5;
-  var size;
-  var side = BLACK;
-  var liberties = [];
-  var block = [];
-  var ko = EMPTY;
-  var bestMove = EMPTY;
-  var userMove = 0;
-  var moveCount = 0;
-
-  // PRIVATE METHODS
-  function drawBoard() { /* Render board to screen */
-    cell = canvas.width / (size-2);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    for (let i = 0; i < size-2; i++) {
-      const x = i * cell + cell / 2;
-      const y = i * cell + cell / 2;
-      let offset = cell * 2 - cell / 2 - cell;
-      ctx.moveTo(offset, y);
-      ctx.lineTo(canvas.width - offset, y);
-      ctx.moveTo(x, offset);
-      ctx.lineTo(x, canvas.height - offset);
-    };
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    for (let row = 0; row < size-2; row++) {
-      for (let col = 0; col < size-2; col++) {
-        let sq = (row+1) * size + (col+1);
-        let starPoints = {
-           9: [36, 38, 40, 58, 60, 62, 80, 82, 84],
-          13: [64, 67, 70, 109, 112, 115, 154, 157, 160],
-          19: [88, 94, 100, 214, 220, 226, 340, 346, 352]
-        }
-        if ([9, 13, 19].includes(size-2) && starPoints[size-2].includes(sq)) {
-          ctx.beginPath();
-          ctx.arc(col * cell+(cell/4)*2, row * cell +(cell/4)*2, cell / 6 - 2, 0, 2 * Math.PI);
-          ctx.fillStyle = 'black';
-          ctx.fill();
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-        if (board[sq] == 7) continue;
-        let color = board[sq] == 1 ? "black" : "white";
-        if (board[sq]) {
-          ctx.beginPath();
-          ctx.arc(col * cell + cell / 2, row * cell + cell / 2, cell / 2 - 2, 0, 2 * Math.PI);
-          ctx.fillStyle = color;
-          ctx.fill();
-          ctx.lineWidth = (color == "white") ? 2 : 1;
-          ctx.stroke();
-        }
-        if (sq == userMove) {
-          let color = board[sq] == 1 ? "white" : "black";
-          ctx.beginPath();
-          ctx.arc(col * cell+(cell/4)*2, row * cell +(cell/4)*2, cell / 5 - 2, 0, 2 * Math.PI);
-          ctx.fillStyle = color;
-          ctx.fill();
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      }
+function clearBoard() {
+  board = [];
+  moveHistory = [];
+  liberties = [];
+  block = [];
+  liberties = [];
+  block = [];
+  side = BLACK;
+  ko = EMPTY;
+  bestMove = EMPTY;
+  userMove = EMPTY;
+  moveCount = EMPTY;
+  level = 1;
+  for (let sq = 0; sq < size ** 2; sq++) {
+    switch (true) {
+      case (sq < size):
+      case (sq >= (size ** 2 - size)):
+      case (!(sq % size)):
+        board[sq] = OFFBOARD;
+        board[sq-1] = OFFBOARD;
+        break;
+      default: board[sq] = 0;
     }
   }
+}
 
-  function userInput(event) { /* Handle user input */
-    if (params.sgf) return;
-    let rect = canvas.getBoundingClientRect();
-    let mouseX = event.clientX - rect.left;
-    let mouseY = event.clientY - rect.top;
-    let col = Math.floor(mouseX / cell);
-    let row = Math.floor(mouseY / cell);
-    let sq = (row+1) * size + (col+1);
-    if (board[sq]) return;
-    if (!setStone(sq, side, true)) return;
-    drawBoard();
-    setTimeout(function() { try { params.response(); } catch (e) { /* Specify custom response function */ } }, 100)
+function printBoard() {
+  let pos = '';
+  let chars = '.XO    #';
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < size; col++) {
+      let sq = row * size + col;
+      pos += ' ' + chars[board[sq]];
+    } pos += '\n'
+  } console.log(pos);
+}
+
+function setStone(sq, color, user) {
+  if (board[sq] != EMPTY) {
+    if (user) alert("Illegal move!");
+    return false;
+  } else if (sq == ko) {
+    if (user) alert("Ko!");
+    return false;
+  } let old_ko = ko;
+  ko = EMPTY;
+  board[sq] = color;
+  captures(3 - color, sq);
+  countLiberties(sq, color);
+  let suicide = liberties.length ? false : true; 
+  restoreBoard();
+  if (suicide) {
+    board[sq] = EMPTY;
+    ko = old_ko;
+    moveCount--;
+    if (user) alert("Suicide move!");
+    return false;
+  } 
+  side = 3 - side;
+  userMove = sq;
+  moveHistory.push({
+    'ply': moveCount+1,
+    'side': (3-color),
+    'move': sq,
+    'board': JSON.stringify(board),
+    'ko': ko
+  });
+  moveCount = moveHistory.length-1;
+  return true;
+}
+
+function passMove() {
+  moveHistory.push({
+    'ply': moveCount+1,
+    'side': (3-side),
+    'move': EMPTY,
+    'board': JSON.stringify(board),
+    'ko': ko
+  });
+  moveCount = moveHistory.length-1;
+  ko = EMPTY;
+  side = 3 - side;
+}
+
+function countLiberties(sq, color) {
+  let stone = board[sq];
+  if (stone == OFFBOARD) return;
+  if (stone && (stone & color) && (stone & MARKER) == 0) {
+    block.push(sq);
+    board[sq] |= MARKER;
+    for (let offset of [1, size, -1, -size]) countLiberties(sq+offset, color);
+  } else if (stone == EMPTY) {
+    board[sq] |= LIBERTY;
+    liberties.push(sq);
   }
+}
 
-  function clearBoard() { /* Empty board, set offboard squares */
-    for (let sq = 0; sq < size ** 2; sq++) {
-      switch (true) {
-        case (sq < size):
-        case (sq >= (size ** 2 - size)):
-        case (!(sq % size)):
-          board[sq] = OFFBOARD;
-          board[sq-1] = OFFBOARD;
-          break;
-        default: board[sq] = 0;
-      }
-    }
+function restoreBoard() {
+  block = []; liberties = []; points_side = [];
+  for (let sq = 0; sq < size ** 2; sq++) {
+    if (board[sq] != OFFBOARD) board[sq] &= 3;
   }
+}
 
-  function printBoard() {
-    let pos = '';
-    let chars = '.XO    #';
-    for (let row = 0; row < size; row++) {
-      for (let col = 0; col < size; col++) {
-        let sq = row * size + col;
-        pos += ' ' + chars[board[sq]];
-      } pos += '\n'
-    } console.log(pos);
-  }
-
-  function setStone(sq, color, user) { /* Place stone on board */
-    if (board[sq] != EMPTY) {
-      if (user) alert("Illegal move!");
-      return false;
-    } else if (sq == ko) {
-      if (user) alert("Ko!");
-      return false;
-    } let old_ko = ko;
-    ko = EMPTY;
-    board[sq] = color;
-    captures(3 - color, sq);
-    count(sq, color);
-    let suicide = liberties.length ? false : true; 
-    restoreBoard();
-    if (suicide) {
-      board[sq] = EMPTY;
-      ko = old_ko;
-      moveCount--;
-      if (user) alert("Suicide move!");
-      return false;
-    } 
-    side = 3 - side;
-    userMove = sq;
-    history.push({
-      'ply': moveCount+1,
-      'side': (3-color),
-      'move': sq,
-      'board': JSON.stringify(board),
-      'ko': ko
-    });
-    moveCount = history.length-1;
-    return true;
-  }
-
-  function pass() {
-    history.push({
-      'ply': moveCount+1,
-      'side': (3-side),
-      'move': EMPTY,
-      'board': JSON.stringify(board),
-      'ko': ko
-    });
-    moveCount = history.length-1;
-    ko = EMPTY;
-    side = 3 - side;
-  }
-
-  function count(sq, color) { /* Count group liberties */
+function captures(color, move) {
+  for (let sq = 0; sq < size ** 2; sq++) {
     let stone = board[sq];
-    if (stone == OFFBOARD) return;
-    if (stone && (stone & color) && (stone & MARKER) == 0) {
-      block.push(sq);
-      board[sq] |= MARKER;
-      for (let offset of [1, size, -1, -size]) count(sq+offset, color);
-    } else if (stone == EMPTY) {
-      board[sq] |= LIBERTY;
-      liberties.push(sq);
+    if (stone == OFFBOARD) continue;
+    if (stone & color) {
+      countLiberties(sq, color);
+      if (liberties.length == 0) clearBlock(move);
+      restoreBoard()
     }
   }
+}
 
-  function restoreBoard() { /* Remove group markers */
-    block = []; liberties = []; points_side = [];
-    for (let sq = 0; sq < size ** 2; sq++) {
-      if (board[sq] != OFFBOARD) board[sq] &= 3;
+function clearBlock(move) {
+  if (block.length == 1 && inEye(move, 0) == 3-side) ko = block[0];
+  for (let i = 0; i < block.length; i++)
+    board[block[i]] = EMPTY;
+}
+
+function inEye(sq) {
+  let eyeColor = -1;
+  let otherColor = -1;
+  for (let offset of [1, size, -1, -size]) {
+    if (board[sq+offset] == OFFBOARD) continue;
+    if (board[sq+offset] == EMPTY) return 0;
+    if (eyeColor == -1) {
+      if (board[sq+offset] <= 2) eyeColor = board[sq+offset];
+      else eyeColor = board[sq+offset] - MARKER;
+      otherColor = 3-eyeColor;
+    } else if (board[sq+offset] == otherColor)
+      return 0;
+  } return eyeColor;
+}
+
+function isLadder(sq, color) {
+  let libs = [];
+  countLiberties(sq, color);
+  libs = JSON.parse(JSON.stringify(liberties));
+  restoreBoard();
+  if (libs.length == 0) return 1;
+  if (libs.length == 1) {
+    board[libs[0]] = color;
+    if (isLadder(libs[0], color)) return 1;
+    board[libs[0]] = EMPTY;
+  }
+  if (libs.length == 2) {
+    for (let move of libs) {
+      board[move] = (3-color);
+      if (isLadder(sq, color)) return move;
+      board[move] = EMPTY;
     }
   }
+  return 0;
+}
 
-  function captures(color, move) { /* Handle captured stones */
-    for (let sq = 0; sq < size ** 2; sq++) {
-      let stone = board[sq];
-      if (stone == OFFBOARD) continue;
-      if (stone & color) {
-        count(sq, color);
-        if (liberties.length == 0) clearBlock(move);
-        restoreBoard()
+function loadHistoryMove() {
+  let move = moveHistory[moveCount];
+  board = JSON.parse(move.board);
+  side = move.side;
+  ko = move.ko;
+  userMove = move.move;
+}
+
+function undoMove() {
+  if (moveCount == 0) return;
+  moveCount--;
+  moveHistory.pop();
+  loadHistoryMove();
+}
+
+function firstMove() {
+  moveCount = 0;
+  loadHistoryMove();
+}
+
+function prevMove() {
+  if (moveCount == 0) return;
+  moveCount--;
+  loadHistoryMove();
+}
+
+function prevFewMoves(few) {
+  if (moveCount == 0) return;
+  if ((moveCount - few) >= 0) moveCount -= few;
+  else firstMove();
+  loadHistoryMove();
+}
+
+function nextMove() {
+  if (moveCount == moveHistory.length-1) return;
+  moveCount++;
+  loadHistoryMove();
+}
+
+function nextFewMoves(few) {
+  if (moveCount == moveHistory.length-1) return;
+  if ((moveCount + few) <= moveHistory.length-1) moveCount += few;
+  else lastMove();
+  loadHistoryMove();
+}
+
+function lastMove() {
+  moveCount = moveHistory.length-1
+  loadHistoryMove();
+}
+
+function loadSgf(sgf) {
+  for (let move of sgf.split(';')) {
+    if (move.length) {
+      if (move.charCodeAt(2) < 97 || move.charCodeAt(2) > 115) { continue; }
+      let player = move[0] == 'B' ? BLACK : WHITE;
+      let col = move.charCodeAt(2)-97;
+      let row = move.charCodeAt(3)-97;
+      let sq = (row+1) * 21 + (col+1);
+      setStone(sq, player, false);
+    }
+  } firstMove();
+}
+
+function saveSgf() {
+  let sgf = '(';
+  for (let item of moveHistory.slice(1, moveHistory.length)) {
+    let col = item.move % size;
+    let row = Math.floor(item.move / size);
+    let color = item.side == BLACK ? 'W' : 'B';
+    let coords = ' abcdefghijklmnopqrs';
+    let move = coords[col] + coords[row];
+    if (move == '  ') sgf += ';' + color + '[]'
+    else sgf += ';' + color + '[' + move + ']';
+  } sgf += ')'
+  return sgf;
+}
+
+function enableLadders(binInputs) {
+  let move = moveHistory[moveCount];
+  boardCopy = JSON.parse(move.board);
+  sideCopy = move.side;
+  koCopy = move.ko;
+  for (let y = 0; y < 19; y++) {
+    for (let x = 0; x < 19; x++) {
+      let sq_19x19 = (19 * y + x);
+      let sq_21x21 = (21 * (y+1) + (x+1))
+      let color = board[sq_21x21];
+      if (color == BLACK || color == WHITE) {
+        let libs_black = 0;
+        let libs_white = 0;
+        countLiberties(sq_21x21, BLACK);
+        libs_black = liberties.length;
+        restoreBoard();
+        countLiberties(sq_21x21, WHITE);
+        libs_white = liberties.length;
+        restoreBoard();
+        if (libs_black == 1 || libs_black == 2 || libs_white == 1 || libs_white == 2) {
+          let laddered = isLadder(sq_21x21, color);
+          if (laddered == 1) {
+            binInputs[inputBufferChannels * sq_19x19 + 14] = 1.0;
+            binInputs[inputBufferChannels * sq_19x19 + 15] = 1.0;
+            binInputs[inputBufferChannels * sq_19x19 + 16] = 1.0;
+          }
+          else if (laddered > 1) {
+            let col = laddered % size;
+            let row = Math.floor(laddered / size);
+            let workingMove = 19 * (row-1) + (col-1);
+            binInputs[inputBufferChannels * workingMove + 17] = 1.0;
+          }
+        }
       }
     }
   }
+  board = boardCopy;
+  side = sideCopy;
+  ko = koCopy;
+}
 
-  function clearBlock(move) { /* Erase stones when captured */
-    if (block.length == 1 && inEye(move, 0) == 3-side) ko = block[0];
-    for (let i = 0; i < block.length; i++)
-      board[block[i]] = EMPTY;
-  }
-
-  function inEye(sq) { /* Check if sqaure is in diamond shape */
-    let eyeColor = -1;
-    let otherColor = -1;
-    for (let offset of [1, size, -1, -size]) {
-      if (board[sq+offset] == OFFBOARD) continue;
-      if (board[sq+offset] == EMPTY) return 0;
-      if (eyeColor == -1) {
-        if (board[sq+offset] <= 2) eyeColor = board[sq+offset];
-        else eyeColor = board[sq+offset] - MARKER;
-        otherColor = 3-eyeColor;
-      } else if (board[sq+offset] == otherColor)
-        return 0;
-    } return eyeColor;
-  }
-
-  function isLadder(sq, color) {
-    let libs = [];
-    count(sq, color);
-    libs = JSON.parse(JSON.stringify(liberties));
-    restoreBoard();
-    if (libs.length == 0) return 1;
-    if (libs.length == 1) {
-      board[libs[0]] = color;
-      if (isLadder(libs[0], color)) return 1;
-      board[libs[0]] = EMPTY;
-    }
-    if (libs.length == 2) {
-      for (let move of libs) {
-        board[move] = (3-color);
-        if (isLadder(sq, color)) return move;
-        board[move] = EMPTY;
+function inputTensor() {
+  let katago = side;
+  let player = (3-side);
+  const binInputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
+  for (let y = 0; y < 19; y++) {
+    for (let x = 0; x < 19; x++) {
+      let sq_19x19 = (19 * y + x);
+      let sq_21x21 = (21 * (y+1) + (x+1))
+      binInputs[inputBufferChannels * sq_19x19 + 0] = 1.0;
+      if (board[sq_21x21] == katago) binInputs[inputBufferChannels * sq_19x19 + 1] = 1.0;
+      if (board[sq_21x21] == player) binInputs[inputBufferChannels * sq_19x19 + 2] = 1.0;
+      if (board[sq_21x21] == katago || board[sq_21x21] == player) {
+        let libs_black = 0;
+        let libs_white = 0;
+        countLiberties(sq_21x21, BLACK);
+        libs_black = liberties.length;
+        restoreBoard();
+        countLiberties(sq_21x21, WHITE);
+        libs_white = liberties.length;
+        restoreBoard();
+        if (libs_black == 1 || libs_white == 1) binInputs[inputBufferChannels * sq_19x19 + 3] = 1.0;
+        if (libs_black == 2 || libs_white == 2) binInputs[inputBufferChannels * sq_19x19 + 4] = 1.0;
+        if (libs_black == 3 || libs_white == 3) binInputs[inputBufferChannels * sq_19x19 + 5] = 1.0;
       }
     }
-    return 0;
   }
-
-  function copyGoban() {
-    let newGoban = new Goban();
-    newGoban.setSize(size);
-    let move = history[moveCount];
-    newGoban.setPosition(move.board);
-    newGoban.setSide(move.side);
-    newGoban.setKo(move.ko);
-    return newGoban;
+  if (ko != EMPTY) {
+    let col = (ko % 21)-1;
+    let row = Math.floor(ko / 21)-1;
+    let sq_19x19 = row * 19 + col;
+    binInputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
   }
+  let moveIndex = moveHistory.length-1;
+  if (moveIndex >= 1 && moveHistory[moveIndex-1].side == player) {
+    let prevLoc1 = moveHistory[moveIndex-1].move;
+    let x = (prevLoc1 % 21)-1;
+    let y = (Math.floor(prevLoc1 / 21))-1;
+    if (prevLoc1) binInputs[inputBufferChannels * (19 * y + x) + 9] = 1.0;
+    else globalInputs[0] = 1.0;
+    if (moveIndex >= 2 && moveHistory[moveIndex-2].side == katago) {
+      let prevLoc2 = moveHistory[moveIndex-2].move;
+      let x = (prevLoc2 % 21)-1;
+      let y = (Math.floor(prevLoc2 / 21))-1;
+      if (prevLoc2) binInputs[inputBufferChannels * (19 * y + x) + 10] = 1.0;
+      else globalInputs[1] = 1.0;
+      if (moveIndex >= 3 && moveHistory[moveIndex-3].side == player) {
+        let prevLoc3 = moveHistory[moveIndex-3].move;
+        let x = (prevLoc3 % 21)-1;
+        let y = (Math.floor(prevLoc3 / 21))-1;
+        if (prevLoc3) binInputs[inputBufferChannels * (19 * y + x) + 11] = 1.0;
+        else globalInputs[2] = 1.0;
+        if (moveIndex >= 4 && moveHistory[moveIndex-4].side == katago) {
+          let prevLoc4 = moveHistory[moveIndex-4].move;
+          let x = (prevLoc4 % 21)-1;
+          let y = (Math.floor(prevLoc4 / 21))-1;
+          if (prevLoc4) binInputs[inputBufferChannels * (19 * y + x) + 12] = 1.0;
+          else globalInputs[3] = 1.0;
+          if (moveIndex >= 5 && moveHistory[moveIndex-5].side == player) {
+            let prevLoc5 = moveHistory[moveIndex-5].move;
+            let x = (prevLoc5 % 21)-1;
+            let y = (Math.floor(prevLoc5 / 21))-1;
+            if (prevLoc5) binInputs[inputBufferChannels * (19 * y + x) + 13] = 1.0;
+            else globalInputs[4] = 1.0;
+          }
+        }
+      }
+    }
+  }  
+  enableLadders(binInputs);
+  let selfKomi = (side == WHITE ? komi+1 : -komi);
+  globalInputs[5] = selfKomi / 20.0
+  return binInputs;
+}
 
-  function loadHistoryMove() {
-    let move = history[moveCount];
-    board = JSON.parse(move.board);
-    side = move.side;
-    ko = move.ko;
-    userMove = move.move;
+async function playMove(button) {
+  if (editMode) { if (button) alert('Please switch to "PLAY" mode first'); return; }
+  document.getElementById('stats').innerHTML = 'Thinking...';
+  let sgf = saveSgf().slice(1, -1);
+  let move = bookMove(sgf);
+  if (move) {
+    setStone(move, side, false)
     drawBoard();
+    document.getElementById('stats').innerHTML = 'BOOK';
+    return;
   }
-
-  function undoMove() {
-    if (moveCount == 0) return;
-    moveCount--;
-    history.pop();
-    loadHistoryMove();
-  }
-
-  function firstMove() {
-    moveCount = 0;
-    loadHistoryMove();
-  }
-
-  function prevMove() {
-    if (moveCount == 0) return;
-    moveCount--;
-    loadHistoryMove();
-  }
-
-  function prevFewMoves(few) {
-    if (moveCount == 0) return;
-    if ((moveCount - few) >= 0) moveCount -= few;
-    else firstMove();
-    loadHistoryMove();
-  }
-
-  function nextMove() {
-    if (moveCount == history.length-1) return;
-    moveCount++;
-    loadHistoryMove();
-  }
-
-  function nextFewMoves(few) {
-    if (moveCount == history.length-1) return;
-    if ((moveCount + few) <= history.length-1) moveCount += few;
-    else lastMove();
-    loadHistoryMove();
-  }
-
-  function lastMove() {
-    moveCount = history.length-1
-    loadHistoryMove();
-  }
-
-  function loadSgf(sgf) {
-    for (let move of sgf.split(';')) {
-      if (move.length) {
-        if (move.charCodeAt(2) < 97 || move.charCodeAt(2) > 115) { continue; }
-        let player = move[0] == 'B' ? BLACK : WHITE;
-        let col = move.charCodeAt(2)-97;
-        let row = move.charCodeAt(3)-97;
-        let sq = (row+1) * 21 + (col+1);
-        setStone(sq, player, false);
-      }
-    } firstMove();
-  }
-
-  function saveSgf() {
-    let sgf = '(';
-    for (let item of history.slice(1, history.length)) {
-      let col = item.move % size;
-      let row = Math.floor(item.move / size);
-      let color = item.side == BLACK ? 'W' : 'B';
-      let coords = ' abcdefghijklmnopqrs';
-      let move = coords[col] + coords[row];
-      if (move == '  ') sgf += ';' + color + '[]'
-      else sgf += ';' + color + '[' + move + ']';
-    } sgf += ')'
-    return sgf;
-  }
-
-  function resizeCanvas() {
-    if (window.innerWidth >= window.innerHeight) window.innerWidth = 800;
-    canvas.width = window.innerWidth-20;
-    canvas.height = canvas.width;
-    drawBoard();
-    document.getElementById('controls').style = 'display: flex; height: 6vh; gap: 5px; width: ' + (canvas.width+4) + 'px;';
-  }
-
-  function init() { /* Init goban module */
-    let container = document.getElementById('goban');
-    canvas = document.createElement('canvas');
-    canvas.style = 'border: 2px solid black;';
-    container.appendChild(canvas);
-    size = params.size+2;
-    canvas.addEventListener('click', userInput);
-    ctx = canvas.getContext('2d');
-    clearBoard();
-    history.push({
-      'ply': 0,
-      'side': BLACK,
-      'move': EMPTY,
-      'board': JSON.stringify(board),
-      'ko': ko
+  const binInputs = inputTensor();
+  try {
+    let path = level ? "./model/dan/model.json" : "./model/kyu/model.json";
+    const model = await tf.loadGraphModel(path);
+    const results = await model.executeAsync({
+        "swa_model/bin_inputs": tf.tensor(binInputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
+        "swa_model/global_inputs": tf.tensor(globalInputs, [batches, inputGlobalBufferChannels], 'float32')
     });
-    moveCount = history.length-1;
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+    const policyTensor = level ? results[1]: results[3];
+    const policyArray = await policyTensor.slice([0, 0, 0], [1, 1, 361]).array();
+    const flatPolicyArray = policyArray[0][0];
+    let scores = level ? results[2] : results[1];
+    let flatScores = scores.dataSync();
+    let copyPolicy = JSON.parse(JSON.stringify(flatPolicyArray));
+    let topPolicies = copyPolicy.sort((a, b) => b - a).slice(0, 2);
+    for (let move = 0; move < topPolicies.length; move++) {
+      let best_19 = flatPolicyArray.indexOf(topPolicies[move]);
+      let row_19 = Math.floor(best_19 / 19);
+      let col_19 = best_19 % 19;
+      let scoreLead = (flatScores[2]*20).toFixed(2);
+      let katagoColor = side == BLACK ? 'Black' : 'White';
+      let playerColor = (3-side) == BLACK ? 'Black' : 'White';
+      document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
+      let bestMove = 21 * (row_19+1) + (col_19+1);
+      if (!setStone(bestMove, side, false)) {
+        if (move == 0) continue;
+        alert('Pass');
+        passMove();
+      } drawBoard(); break;
+    }
+  } catch (e) {
+    console.log(e);
   }
-  
-  // PUBLIC API
-  return {
-    init: function() { return init(); },
-    BLACK: BLACK,
-    WHITE: WHITE,
-    copy: function() { return copyGoban(); },
-    importSgf: function(sgf) { return loadSgf(sgf); },
-    exportSgf: function() { return saveSgf(); },
-    ladder: function(sq, color) { return isLadder(sq, color); },
-    position: function() { return board; },
-    setPosition: function(pos) { board = JSON.parse(pos); },
-    print: function() { return printBoard(); },
-    setKomi: function(komiVal) { komi = komiVal; },
-    komi: function() { return komi; },
-    history: function() { return history; },
-    side: function() { return side; },
-    setSide: function(s) { side = s; },
-    size: function() { return size; },
-    setSize: function(s) { size = s; },
-    ko: function() { return ko; },
-    setKo: function(k) { ko = k; },
-    count: function(sq, color) { return count(sq, color); },
-    liberties: function() { return liberties; },
-    restore: function() { return restoreBoard(); },
-    play: function(sq, color, user) { return setStone(sq, color, user); },
-    pass: function() { return pass(); },
-    refresh: function() { return drawBoard(); },
-    undoMove: function() { return undoMove(); },
-    firstMove: function() { return firstMove(); },
-    prevFewMoves: function(few) { return prevFewMoves(few); },
-    prevMove: function() { return prevMove(); },
-    nextMove: function() { return nextMove(); },
-    nextFewMoves: function(few) { return nextFewMoves(few); },
-    lastMove: function() { return lastMove(); }
+}
+
+async function eval() {
+  document.getElementById('stats').innerHTML = 'Estimating score...';
+  const binInputs = inputTensor();
+  try {
+    const model = await tf.loadGraphModel("./model/dan/model.json");
+    const results = await model.executeAsync({
+        "swa_model/bin_inputs": tf.tensor(binInputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
+        "swa_model/global_inputs": tf.tensor(globalInputs, [batches, inputGlobalBufferChannels], 'float32')
+    });
+    let scores = results[2];
+    let flatScores = scores.dataSync(2);
+    let scoreLead = (flatScores[2]*20).toFixed(2);
+    let katagoColor = side == BLACK ? 'Black' : 'White';
+    let playerColor = (3-side) == BLACK ? 'Black' : 'White';
+    document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
+  } catch (e) {
+    console.log(e);
   }
+}
+
+function initGoban() {
+  clearBoard();
+  moveHistory.push({
+    'ply': 0,
+    'side': BLACK,
+    'move': EMPTY,
+    'board': JSON.stringify(board),
+    'ko': ko
+  });
+  moveCount = moveHistory.length-1;
 }
