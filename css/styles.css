@@ -1,0 +1,35 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  -webkit-user-select: none; /* Chrome, Safari, and Opera */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* Internet Explorer/Edge */
+  user-select: none;         /* Standard syntax */
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+}
+
+button {
+ -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  font-size: 30px;
+  background-color: white;
+  color: black;
+  cursor: pointer;
+}
+
+button:active {
+  background-color: black;
+  color: white;
+}

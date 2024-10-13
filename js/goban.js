@@ -378,14 +378,6 @@ function inputTensor() {
 async function playMove(button) {
   if (editMode) { if (button) alert('Please switch to "PLAY" mode first'); return; }
   document.getElementById('stats').innerHTML = 'Thinking...';
-  let sgf = saveSgf().slice(1, -1);
-  let move = bookMove(sgf);
-  if (move) {
-    setStone(move, side, false)
-    drawBoard();
-    document.getElementById('stats').innerHTML = 'BOOK';
-    return;
-  }
   const binInputs = inputTensor();
   try {
     let path = level ? "./model/dan/model.json" : "./model/kyu/model.json";
@@ -400,9 +392,10 @@ async function playMove(button) {
     let scores = level ? results[2] : results[1];
     let flatScores = scores.dataSync();
     let copyPolicy = JSON.parse(JSON.stringify(flatPolicyArray));
-    let topPolicies = copyPolicy.sort((a, b) => b - a).slice(0, 2);
+    let topPolicies = copyPolicy.sort((a, b) => b - a).slice(0, 3);
     for (let move = 0; move < topPolicies.length; move++) {
-      let best_19 = flatPolicyArray.indexOf(topPolicies[move]);
+      let moveChoice = (moveHistory.length <= 6) ? Math.floor(Math.random() * 3) : move;
+      let best_19 = flatPolicyArray.indexOf(topPolicies[moveChoice]);
       let row_19 = Math.floor(best_19 / 19);
       let col_19 = best_19 % 19;
       let scoreLead = (flatScores[2]*20).toFixed(2);
