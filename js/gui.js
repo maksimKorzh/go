@@ -89,6 +89,11 @@ function downloadSgf() {
 }
 
 function handleGo() {
+  if (!gameOver) {
+    if (editMode) handleMode();
+    alert('Please press "PASS" to finish the game first');
+    return;
+  }
   initGoban();
   drawBoard();
   gameOver = 0;
@@ -161,7 +166,7 @@ function initGUI() {
   ctx = canvas.getContext('2d');
   document.getElementById('controls').innerHTML = `
     <button onclick="handleGo();">GO</button>
-    <button onclick="handlePass()">PASS</button>
+    <button onclick="handlePass();">PASS</button>
     <button onclick="handleMove();">MOVE</button>
     <button onclick="handleUndo();">UNDO</button>
     <button onclick="handleMode();">MODE</button>
