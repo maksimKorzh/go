@@ -14,7 +14,7 @@ var gtp = readline.createInterface({
 
 gtp.on('line', function(command){
   if (command == 'quit') process.exit();
-  else if (command.includes('name')) console.log('= PWAGoBot\n');
+  else if (command.includes('name')) setTimeout(function() { console.log('= PWAGoBot\n'); }, 5000);
   else if (command.includes('protocol_version')) console.log('= 2\n');
   else if (command.includes('version')) console.log('= 1.0\n');
   else if (command.includes('list_commands')) console.log('= protocol_version\nclear_board\n');
@@ -34,6 +34,4 @@ gtp.on('line', function(command){
   }
   else if (command.includes('genmove')) { playMove(); }
   else console.log('=\n');
-});
-
-initGoban();
+}); initGoban();
