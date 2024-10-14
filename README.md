@@ -45,6 +45,8 @@ To run it as a GTP engine you'll need nodejs installed.
 Once you have that you can either run it in a command line
 via **node gtp.js** (see "/go/gtp/gtp.js") or in a GUI
 like GoGUI or SabakiHQ using command **node /path/to/go/gtp/gtp.js**.
+<br><br>
+NOTE: In GTP mode default strength is DAN, set **level = 0** in **/go/js/goban.js** to enable KYU strength.
 
 # Can it play against other human players online?
 Yes, it can. I run this app as a KGS bot (PWAGoBot)

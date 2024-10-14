@@ -1,5 +1,6 @@
 var canvas, ctx, cell;
 var editMode = 0;
+var gameOver = 0;
 
 function drawBoard() {
   cell = canvas.width / (size-2);
@@ -56,6 +57,7 @@ function drawBoard() {
 }
 
 function userInput(event) {
+  if (gameOver) return;
   let rect = canvas.getBoundingClientRect();
   let mouseX = event.clientX - rect.left;
   let mouseY = event.clientY - rect.top;
@@ -86,6 +88,70 @@ function downloadSgf() {
   document.body.removeChild(element);
 }
 
+function handleGo() {
+  initGoban();
+  drawBoard();
+  gameOver = 0;
+  editMode = 0;
+  document.getElementById('stats').innerHTML = 'AI(dan), Chinese rules, Komi 7.5';
+}
+
+function handleMove() {
+  if (!gameOver) playMove(1)
+}
+
+function handlePass() {
+  if (!gameOver) {
+    if (editMode) passMove();
+    else {
+      if (!moveHistory.slice(-1).move) {
+        passMove();
+        if (!moveHistory.slice(-1).move && !moveHistory.slice(-2).move) {
+          let result = document.getElementById('stats').innerHTML.replace('leads', 'wins');
+          if (!result.includes('points')) result = 'No result';
+          document.getElementById('stats').innerHTML = 'Press GO to play again';
+          setTimeout(function() { alert('Game is finished\n' + result); }, 10);
+          gameOver = 1;
+        }
+      }
+    }
+  }
+}
+
+function handleUndo() {
+  if (!gameOver) {
+    undoMove();
+    drawBoard();
+  }
+}
+
+function handleMode() {
+  if (!gameOver) {
+    editMode ^= 1;
+    document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY';
+  }
+}
+
+function handleEval() {
+  if (!gameOver) evaluatePosition();
+}
+
+function handleSave() {
+  if (gameOver) downloadSgf();
+  else {
+    editMode = 0;
+    handlePass();
+    downloadSgf();
+  }
+}
+
+function handleAI() {
+  if (!gameOver) {
+    level ^= 1;
+    document.getElementById('stats').innerHTML = level ? 'AI (dan)' : 'AI (kyu)';
+  }
+}
+
 function initGUI() {
   let container = document.getElementById('goban');
   canvas = document.createElement('canvas');
@@ -94,14 +160,14 @@ function initGUI() {
   canvas.addEventListener('click', userInput);
   ctx = canvas.getContext('2d');
   document.getElementById('controls').innerHTML = `
-    <button onclick="initGoban(); drawBoard(); document.getElementById('stats')">GO</button>
-    <button onclick="passMove();">PASS</button>
-    <button onclick="playMove(1)">MOVE</button>
-    <button onclick="undoMove(); drawBoard();">UNDO</button>
-    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY'">MODE</button>
-    <button onclick="evaluatePosition();">EVAL</button>
-    <button onclick="downloadSgf()">SAVE</button>
-    <button onclick="level ^= 1; document.getElementById('stats').innerHTML = level ? 'AI (dan)' : 'AI (kyu)'">AI</button>
+    <button onclick="handleGo();">GO</button>
+    <button onclick="handlePass()">PASS</button>
+    <button onclick="handleMove();">MOVE</button>
+    <button onclick="handleUndo();">UNDO</button>
+    <button onclick="handleMode();">MODE</button>
+    <button onclick="handleEval();">EVAL</button>
+    <button onclick="handleSave();">SAVE</button>
+    <button onclick="handleAI();">AI</button>
   `;
   window.addEventListener('resize', resizeCanvas);
   initGoban();
