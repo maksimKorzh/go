@@ -5,18 +5,20 @@ if (typeof(module) != 'undefined') {
   (async () => {
     const tfModule = await import('./tensorflow.js');
     tf = tfModule.default;
+    danModel = await tf.loadGraphModel("https://maksimkorzh.github.io/go/model/dan/model.json");
+    kyuModel = await tf.loadGraphModel("https://maksimkorzh.github.io/go/model/kyu/model.json");
   })();
 }
 
-(async () => {
-  if (typeof(document) != 'undefined') { document.getElementById('stats').innerHTML = 'Loading neural nets, please wait...';}
-  danModel = await tf.loadGraphModel("https://maksimkorzh.github.io/go/model/dan/model.json");
-  kyuModel = await tf.loadGraphModel("https://maksimkorzh.github.io/go/model/kyu/model.json");
-  if (typeof(document) != 'undefined') {
+if (typeof(document) != 'undefined') {
+  (async () => {
+    document.getElementById('stats').innerHTML = 'Loading neural nets, please wait...';
+    danModel = await tf.loadGraphModel("https://maksimkorzh.github.io/go/model/dan/model.json");
+    kyuModel = await tf.loadGraphModel("https://maksimkorzh.github.io/go/model/kyu/model.json");
     initGUI();
     document.getElementById('stats').innerHTML = 'AI(dan), Chinese rules, Komi 7.5';
-  }
-})();
+  })();
+}
 
 const batches = 1;
 const inputBufferLength = 19 * 19;
@@ -436,7 +438,7 @@ async function playMove(button) {
       else console.log('= ' + 'ABCDEFGHJKLMNOPQRST'[col_19] + (size-row_19-2) + '\n');
       break;
     }
-  } catch (e) {}
+  } catch (e) {console.log(e);}
 }
 
 async function evaluatePosition() {
