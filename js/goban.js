@@ -255,6 +255,10 @@ function lastMove() {
   loadHistoryMove();
 }
 
+function getHistory() {
+  return moveHistory;
+}
+
 function loadSgf(sgf) {
   for (let move of sgf.split(';')) {
     if (move.length) {
@@ -475,6 +479,7 @@ if (typeof(module) != 'undefined') {
   module.exports = {
     BLACK, WHITE,
     size,
+    getHistory,
     initGoban,
     printBoard,
     setStone,

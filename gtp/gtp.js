@@ -4,7 +4,7 @@ globalThis.fetch = fetch;
 export default tf;
 import readline from 'readline';
 import goban from '../js/goban.js';
-const { BLACK, WHITE, size, initGoban, printBoard, setStone, playMove, passMove } = goban;
+const { BLACK, WHITE, size, getHistory, initGoban, printBoard, setStone, playMove, passMove } = goban;
 
 var gtp = readline.createInterface({
   input: process.stdin,
@@ -32,6 +32,10 @@ gtp.on('line', function(command){
       setStone(sq, color);
     } console.log('=\n');
   }
-  else if (command.includes('genmove')) { playMove(); }
+  else if (command.includes('genmove')) {
+    let moveHistory = getHistory();
+    if (moveHistory.length > 1 && moveHistory.slice(-1)[0].move == 0) console.log('= PASS\n');
+    else playMove();
+  }
   else console.log('=\n');
 }); initGoban();
