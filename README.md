@@ -59,7 +59,7 @@ so here's the setup I use to run this app as KGS bot:
     room=Computer Go
     mode=custom
     gameNotes=Bare KataGo net with no MCTS, around 1d strength
-    talk=direct chat wouldresponse with this message
+    talk=direct chat would response with this message
     verbose=t
     engine=node /path/to/go/gtp/gtp.js
 

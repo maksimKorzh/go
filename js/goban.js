@@ -1,3 +1,23 @@
+var tf;
+var danModel, kyuModel;
+
+if (typeof(module) != 'undefined') {
+  (async () => {
+    const tfModule = await import('./tensorflow.js');
+    tf = tfModule.default;
+  })();
+}
+
+(async () => {
+  if (typeof(document) != 'undefined') { document.getElementById('stats').innerHTML = 'Loading neural nets, please wait...';}
+  danModel = await tf.loadGraphModel("https://maksimkorzh.github.io/go/model/dan/model.json");
+  kyuModel = await tf.loadGraphModel("https://maksimkorzh.github.io/go/model/kyu/model.json");
+  if (typeof(document) != 'undefined') {
+    initGUI();
+    document.getElementById('stats').innerHTML = 'AI(dan), Chinese rules, Komi 7.5';
+  }
+})();
+
 const batches = 1;
 const inputBufferLength = 19 * 19;
 const inputBufferChannels = 22;
@@ -376,12 +396,13 @@ function inputTensor() {
 }
 
 async function playMove(button) {
-  if (editMode) { if (button) alert('Please switch to "PLAY" mode first'); return; }
-  document.getElementById('stats').innerHTML = 'Thinking...';
+  if (typeof(document) != 'undefined') {
+    if (editMode) { if (button) alert('Please switch to "PLAY" mode first'); return; }
+    document.getElementById('stats').innerHTML = 'Thinking...';
+  }
   const binInputs = inputTensor();
   try {
-    let path = level ? "./model/dan/model.json" : "./model/kyu/model.json";
-    const model = await tf.loadGraphModel(path);
+    const model = await (level ? danModel : kyuModel);
     const results = await model.executeAsync({
         "swa_model/bin_inputs": tf.tensor(binInputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
         "swa_model/global_inputs": tf.tensor(globalInputs, [batches, inputGlobalBufferChannels], 'float32')
@@ -401,24 +422,28 @@ async function playMove(button) {
       let scoreLead = (flatScores[2]*20).toFixed(2);
       let katagoColor = side == BLACK ? 'Black' : 'White';
       let playerColor = (3-side) == BLACK ? 'Black' : 'White';
-      document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
+      if (typeof(document) != 'undefined') {
+        document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
+      }
       let bestMove = 21 * (row_19+1) + (col_19+1);
       if (!setStone(bestMove, side, false)) {
         if (move == 0) continue;
-        alert('Pass');
+        if (typeof(document) != 'undefined') { alert('Pass'); }
+        else console.log('= PASS\n');
         passMove();
-      } drawBoard(); break;
+      }
+      if (typeof(document) != 'undefined') { drawBoard(); }
+      else console.log('= ' + 'ABCDEFGHJKLMNOPQRST'[col_19] + (size-row_19-2) + '\n');
+      break;
     }
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
 }
 
-async function eval() {
+async function evaluatePosition() {
   document.getElementById('stats').innerHTML = 'Estimating score...';
   const binInputs = inputTensor();
   try {
-    const model = await tf.loadGraphModel("./model/dan/model.json");
+    const model = await danModel;
     const results = await model.executeAsync({
         "swa_model/bin_inputs": tf.tensor(binInputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
         "swa_model/global_inputs": tf.tensor(globalInputs, [batches, inputGlobalBufferChannels], 'float32')
@@ -429,9 +454,7 @@ async function eval() {
     let katagoColor = side == BLACK ? 'Black' : 'White';
     let playerColor = (3-side) == BLACK ? 'Black' : 'White';
     document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
 }
 
 function initGoban() {
@@ -444,4 +467,16 @@ function initGoban() {
     'ko': ko
   });
   moveCount = moveHistory.length-1;
+}
+
+if (typeof(module) != 'undefined') {
+  module.exports = {
+    BLACK, WHITE,
+    size,
+    initGoban,
+    printBoard,
+    setStone,
+    playMove,
+    passMove
+  };
 }

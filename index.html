@@ -11,18 +11,9 @@
   <title>Go</title>
 </head>
 <body>
-  <div id="controls">
-    <button onclick="initGoban(); drawBoard(); document.getElementById('stats').innerHTML = 'AI (dan), Chinese rules, Komi 7.5';">GO</button>
-    <button onclick="passMove();">PASS</button>
-    <button onclick="playMove(1)">MOVE</button>
-    <button onclick="undoMove(); drawBoard();">UNDO</button>
-    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY'">MODE</button>
-    <button onclick="eval();">EVAL</button>
-    <button onclick="downloadSgf()">SAVE</button>
-    <button onclick="level ^= 1; document.getElementById('stats').innerHTML = level ? 'AI (dan)' : 'AI (kyu)'">AI</button>
-  </div>
+  <div id="controls"></div>
   <div class="container"><div id="goban"></div></div>
-  <div id="stats" style="font-size: 38px; margin-bottom: 2%;">AI (dan), Chinese rules, Komi 7.5</div>
+  <div id="stats" style="font-size: 38px; margin-bottom: 2%;"></div>
   <script src="js/tensorflow.js"></script>
   <script src="js/goban.js"></script>
   <script src="js/gui.js"></script>

@@ -1,12 +1,5 @@
 var canvas, ctx, cell;
 var editMode = 0;
-let container = document.getElementById('goban');
-canvas = document.createElement('canvas');
-canvas.style = 'border: 2px solid black;';
-container.appendChild(canvas);
-canvas.addEventListener('click', userInput);
-ctx = canvas.getContext('2d');
-window.addEventListener('resize', resizeCanvas);
 
 function drawBoard() {
   cell = canvas.width / (size-2);
@@ -91,4 +84,26 @@ function downloadSgf() {
   document.body.appendChild(element);
   element.click();
   document.body.removeChild(element);
+}
+
+function initGUI() {
+  let container = document.getElementById('goban');
+  canvas = document.createElement('canvas');
+  canvas.style = 'border: 2px solid black;';
+  container.appendChild(canvas);
+  canvas.addEventListener('click', userInput);
+  ctx = canvas.getContext('2d');
+  document.getElementById('controls').innerHTML = `
+    <button onclick="initGoban(); drawBoard(); document.getElementById('stats')">GO</button>
+    <button onclick="passMove();">PASS</button>
+    <button onclick="playMove(1)">MOVE</button>
+    <button onclick="undoMove(); drawBoard();">UNDO</button>
+    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY'">MODE</button>
+    <button onclick="evaluatePosition();">EVAL</button>
+    <button onclick="downloadSgf()">SAVE</button>
+    <button onclick="level ^= 1; document.getElementById('stats').innerHTML = level ? 'AI (dan)' : 'AI (kyu)'">AI</button>
+  `;
+  window.addEventListener('resize', resizeCanvas);
+  initGoban();
+  resizeCanvas();
 }
