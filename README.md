@@ -2,12 +2,12 @@
 A Go/Weiqi/Baduk Progressive Web Application
 
 # What is this?
-This is a Go AI sparring partner for single digit kyu and low dan players.
+This is a Go AI sparring partner for single digit kyu and low dan players
 
 # What is the AI behind it?
 KYU level (6 block net, ~4MB): kata1-b6c96-s175395328-d26788732<br>
 DAN level:(10 block net ~11MB): kata1-b10c128-s1141046784-d204142634<br><br>
-There is no MCTS or any other search algorithm involved, so you play against the bare net.
+There is no MCTS or any other search algorithm involved, so you play against the bare net
 
 # How strong is it?
 Dan level is around OGS 1 dan<br>
@@ -47,21 +47,7 @@ via **node gtp.js** (see "/go/gtp/gtp.js") or in a GUI
 like GoGUI or SabakiHQ using command **node /path/to/go/gtp/gtp.js**.
 
 # Can it play against other human players online?
-Yes, it can. Here is the setup I use to run this app as a KGS bot (PWAGoBot):
- - **cd go**
- - **python3 -m http.server** this is needed to host NN weights
- - **cd /path/to/kgsGtp/**
- - **java -jar kgsGtp.jar config.ini**
-
-# Example of KGS 'config.ini'
-    name=username
-    password=password
-    room=Computer Go
-    mode=custom
-    gameNotes=Bare KataGo net with no MCTS, around 1d strength
-    talk=direct chat would response with this message
-    verbose=t
-    engine=node /path/to/go/gtp/gtp.js
+Yes, it can. I run this app as a KGS bot (PWAGoBot)
 
 # Known issues
 Since there's no MCTS search, a bare net is vulnerable to tacical blunders,
@@ -70,7 +56,7 @@ in atari might run thinking it can be saved. It may also think it's killing a gr
 while on the real deal it's dead, this results in score evaluation jumps.
 
 # Donations
-If you enjoyed the app and willing to buy me a coffee feel free to use PayPal **maksymkorzh@gmail.com**
+If you enjoyed the app and willing to buy me a coffee please use PayPal **maksymkorzh@gmail.com**
 
 # Video overview
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/5-ds-vygmRk/0.jpg)](https://www.youtube.com/watch?v=5-ds-vygmRk)
