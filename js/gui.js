@@ -17,6 +17,7 @@ function drawBoard() {
   };
   ctx.lineWidth = 1;
   ctx.stroke();
+  let candidateMoves = gameMoves(saveSgf().slice(1, -1));
   for (let row = 0; row < size-2; row++) {
     for (let col = 0; col < size-2; col++) {
       let sq = (row+1) * size + (col+1);
@@ -34,23 +35,35 @@ function drawBoard() {
         ctx.stroke();
       }
       if (board[sq] == 7) continue;
-      let color = board[sq] == 1 ? "black" : "white";
+      let color = board[sq] == 1 ? 'black' : 'white';
       if (board[sq]) {
         ctx.beginPath();
         ctx.arc(col * cell + cell / 2, row * cell + cell / 2, cell / 2 - 2, 0, 2 * Math.PI);
         ctx.fillStyle = color;
         ctx.fill();
-        ctx.lineWidth = (color == "white") ? 2 : 1;
+        ctx.lineWidth = (color == 'white') ? 2 : 1;
         ctx.stroke();
       }
       if (sq == userMove) {
-        let color = board[sq] == 1 ? "white" : "black";
+        let color = board[sq] == 1 ? 'white' : 'black';
         ctx.beginPath();
         ctx.arc(col * cell+(cell/4)*2, row * cell +(cell/4)*2, cell / 5 - 2, 0, 2 * Math.PI);
         ctx.fillStyle = color;
         ctx.fill();
         ctx.lineWidth = 1;
         ctx.stroke();
+      }
+      if (editMode && candidateMoves.length) {
+        for (let move of candidateMoves) {
+          if (board[sq] == EMPTY && sq == move) {
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.rect(col * cell + cell/4, row * cell + cell/4, Math.floor(cell/2), Math.floor(cell/2));
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.stroke();
+          }
+        }
       }
     }
   }
@@ -136,6 +149,7 @@ function handleMode() {
   if (!gameOver) {
     editMode ^= 1;
     document.getElementById('stats').innerHTML = editMode ? 'EDIT' : 'PLAY';
+    drawBoard();
   }
 }
 
@@ -181,4 +195,5 @@ function initGUI() {
   window.addEventListener('resize', resizeCanvas);
   initGoban();
   resizeCanvas();
+  document.getElementById('stats').innerHTML = 'AI(dan), Chinese rules, Komi 7.5';
 }

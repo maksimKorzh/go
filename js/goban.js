@@ -16,7 +16,6 @@ if (typeof(document) != 'undefined') {
     danModel = await tf.loadGraphModel("https://maksimkorzh.github.io/go/model/dan/model.json");
     kyuModel = await tf.loadGraphModel("https://maksimkorzh.github.io/go/model/kyu/model.json");
     initGUI();
-    document.getElementById('stats').innerHTML = 'AI(dan), Chinese rules, Komi 7.5';
   })();
 }
 
@@ -429,7 +428,7 @@ async function playMove(button) {
       let katagoColor = side == BLACK ? 'Black' : 'White';
       let playerColor = (3-side) == BLACK ? 'Black' : 'White';
       if (typeof(document) != 'undefined') {
-        document.getElementById('stats').innerHTML = 'AI(dan), Chinese rules, Komi 7.5';
+        document.getElementById('stats').innerHTML = 'AI(' + (level ? 'dan' : 'kyu') + '), Chinese rules, Komi 7.5';
       }
       let bestMove = 21 * (row_19+1) + (col_19+1);
       if (!setStone(bestMove, side, false)) {
