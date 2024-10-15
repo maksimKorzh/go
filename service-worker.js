@@ -8,6 +8,7 @@ self.addEventListener('install', (event) => {
         '/go/css/styles.css',
         '/go/js/tensorflow.js',
         '/go/js/goban.js',
+        '/go/js/games.js',
         '/go/js/gui.js',
         '/go/js/main.js',
         '/go/model/kyu/model.json',
