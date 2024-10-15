@@ -101,26 +101,28 @@ function handleGo() {
   document.getElementById('stats').innerHTML = 'AI(dan), Chinese rules, Komi 7.5';
 }
 
-function handleMove() {
-  if (!gameOver) playMove(1)
-}
-
 function handlePass() {
   if (!gameOver) {
     if (editMode) passMove();
     else {
-      if (!moveHistory.slice(-1).move) {
-        passMove();
-        if (!moveHistory.slice(-1).move && !moveHistory.slice(-2).move) {
-          let result = document.getElementById('stats').innerHTML.replace('leads', 'wins');
-          if (!result.includes('points')) result = 'No result';
-          document.getElementById('stats').innerHTML = 'Press GO to play again';
-          setTimeout(function() { alert('Game is finished\n' + result); }, 10);
-          gameOver = 1;
+      (async () => {
+        let result = await evaluatePosition()
+        if (!moveHistory.slice(-1).move) {
+          passMove();
+          if (!moveHistory.slice(-1).move && !moveHistory.slice(-2).move) {
+            result = result.replace('leads', 'wins');
+            document.getElementById('stats').innerHTML = 'Press GO to play again';
+            setTimeout(function() { alert('Game is finished\n' + result); }, 100);
+            gameOver = 1;
+          }
         }
-      }
+      })();    
     }
   }
+}
+
+function handleMove() {
+  if (!gameOver) playMove(1)
 }
 
 function handleUndo() {
@@ -138,7 +140,9 @@ function handleMode() {
 }
 
 function handleEval() {
-  if (!gameOver) evaluatePosition();
+  if (!gameOver) {
+    (async () => { alert(await evaluatePosition()); })();
+  }
 }
 
 function handleSave() {

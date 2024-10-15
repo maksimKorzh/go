@@ -429,7 +429,7 @@ async function playMove(button) {
       let katagoColor = side == BLACK ? 'Black' : 'White';
       let playerColor = (3-side) == BLACK ? 'Black' : 'White';
       if (typeof(document) != 'undefined') {
-        document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
+        document.getElementById('stats').innerHTML = 'AI(dan), Chinese rules, Komi 7.5';
       }
       let bestMove = 21 * (row_19+1) + (col_19+1);
       if (!setStone(bestMove, side, false)) {
@@ -445,8 +445,7 @@ async function playMove(button) {
   } catch (e) {console.log(e);}
 }
 
-async function evaluatePosition() {
-  document.getElementById('stats').innerHTML = 'Estimating score...';
+async function evaluatePosition(button) {
   const binInputs = inputTensor();
   try {
     const model = await danModel;
@@ -459,7 +458,8 @@ async function evaluatePosition() {
     let scoreLead = (flatScores[2]*20).toFixed(2);
     let katagoColor = side == BLACK ? 'Black' : 'White';
     let playerColor = (3-side) == BLACK ? 'Black' : 'White';
-    document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
+    let scoreString = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
+    return scoreString;
   } catch (e) {}
 }
 
