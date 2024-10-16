@@ -1,0 +1,50 @@
+<script>
+const socket = new WebSocket('wss://x.playok.com:17003/ws/');
+
+socket.addEventListener('open', function () {
+  console.log('Connected to the WebSocket server.');
+
+  // Initial message to send after connecting
+  const initialMessage = JSON.stringify({
+    "i": [1721],
+    "s": [
+      "+518832092133209216|1920951531|17676847",
+      "en",
+      "b",
+      "",
+      "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+      "/1729071663145/1",
+      "w",
+      "1920x1080 1",
+      "ref:https://www.playok.com/en/go/",
+      "ver:260"
+    ]
+  });
+
+  // Send the initial message
+  socket.send(initialMessage);
+
+  // Set up keep-alive interval
+  setInterval(function() {
+    const keepAliveMessage = JSON.stringify({ "i": [] }); // Sending an empty array as a heartbeat
+    socket.send(keepAliveMessage);
+    //console.log('Sent keep-alive message:', keepAliveMessage);
+  }, 5000);
+});
+
+// Listening for messages from the server
+socket.addEventListener('message', function (event) {
+  console.log('Message from server:', event.data);
+});
+
+// Handle errors
+socket.addEventListener('error', function (error) {
+  console.error('WebSocket error:', error);
+});
+
+// Handle connection close
+socket.addEventListener('close', function () {
+  console.log('WebSocket connection closed.');
+});
+
+</script>
