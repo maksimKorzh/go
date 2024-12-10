@@ -19,6 +19,7 @@
   <script>
     function initGUI () { document.getElementById('stats').innerHTML = 'Paste your game in SGF below and click "Analyze"'; }
     
+    // Load SGF
     function loadGame() {
       let sgf = document.getElementById('sgf').value;
       initGoban();
@@ -49,7 +50,9 @@
       let whitePerformance = 0;
       for (let i = 0; i < whiteScores.length; i++) whitePerformance += whiteScores[i];
       whitePerformance = Math.floor(whitePerformance / whiteScores.length);
-      document.getElementById('sgf').value = 'Average black performance is NN move #' + blackPerformance + '\n' + 'Average white performance is NN move #' + whitePerformance;
+      let blackRank = blackPerformance < 10 ? ((10-blackPerformance) + 'd') : ((blackPerformance - 9) + 'k');
+      let whiteRank = whitePerformance < 10 ? ((10-whitePerformance) + 'd') : ((whitePerformance - 9) + 'k');
+      document.getElementById('sgf').value = 'Black average NN move is #' + blackPerformance + ', ~ OGS ' + blackRank + '\n' + 'White average NN move is #' + whitePerformance + ', ~ OGS ' + whiteRank;
     }
 
     // Get current move choice from NN
