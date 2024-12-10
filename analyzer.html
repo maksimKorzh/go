@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"i style="touch-action: none;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="user-scalable=0">
+  <meta name="description" content="Go/Weiqi/Baduk SGF game AI performance analyzer">
+  <meta name="keyword" content="go, weiqi, baduk, game of go, katago, neural net, web browser, android application, free, ad-free">
+  <base href="/go/">
+  <title>Game analyzer</title>
+</head>
+<body align="center">
+  <div id="stats" style="font-size: 18px;"></div>
+  <textarea id="sgf" style="font-size: 18px; width: 500px; height: 500px;"></textarea>
+  <div><button onclick="loadGame();" style="font-size: 18px;">Analyze</button></div>
+  <div id="controls" hidden></div>
+  <div class="container" hidden><div id="goban"></div></div>
+  <script src="js/tensorflow.js"></script>
+  <script src="js/goban.js"></script>
+  <script>
+    function initGUI () { document.getElementById('stats').innerHTML = 'Paste your game in SGF below and click "Analyze"'; }
+    initGoban();
+    
+    function loadGame() {
+      let sgf = document.getElementById('sgf').value;
+      loadSgf(sgf);
+      performance();
+    }
+
+    // Measure average move choice
+    async function performance() {
+      let blackScores = [];
+      let whiteScores = [];
+      firstMove();
+      for (let i = 1; i < moveHistory.length; i++) {
+        let move_21 = moveHistory[i].move;
+        let row_21 = Math.floor(move_21 / 21);
+        let col_21 = move_21 % 21;
+        let move_19 = (row_21-1)*19+(col_21-1);
+        let score = await movePolicy(move_19);
+        document.getElementById('stats').innerHTML = 'Move #' + i + ' is NN choice ' + score;
+        if (i % 2) blackScores.push(score);
+        else whiteScores.push(score);
+        document.getElementById('sgf').value = printBoard();
+        nextMove();
+      }
+      let blackPerformance = 0;
+      for (let i = 0; i < blackScores.length; i++) blackPerformance += blackScores[i];
+      blackPerformance = Math.floor(blackPerformance / blackScores.length);
+      let whitePerformance = 0;
+      for (let i = 0; i < whiteScores.length; i++) whitePerformance += whiteScores[i];
+      whitePerformance = Math.floor(whitePerformance / whiteScores.length);
+      document.getElementById('sgf').value = 'Average black performance is NN move #' + blackPerformance + '\n' + 'Average white performance is NN move #' + whitePerformance;
+    }
+
+    // Get current move choice from NN
+    async function movePolicy(move) {
+      const binInputs = inputTensor();
+      try {
+        const model = await danModel;
+        const results = await model.executeAsync({
+            "swa_model/bin_inputs": tf.tensor(binInputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
+            "swa_model/global_inputs": tf.tensor(globalInputs, [batches, inputGlobalBufferChannels], 'float32')
+        });
+        const policyTensor = level ? results[1]: results[3];
+        const policyArray = await policyTensor.slice([0, 0, 0], [1, 1, 361]).array();
+        const flatPolicyArray = policyArray[0][0];
+        let scores = level ? results[2] : results[1];
+        let flatScores = scores.dataSync();
+        let copyPolicy = JSON.parse(JSON.stringify(flatPolicyArray));
+        let topPolicies = copyPolicy.sort((a, b) => b - a);
+     
+        for (let i = 0; i < topPolicies.length; i++) {
+          let policyMove = flatPolicyArray.indexOf(topPolicies[i]);
+          if (move == policyMove) return i+1;
+        }
+      } catch (e) {console.log(e);}
+    }
+  </script>
+</body>
+</html>

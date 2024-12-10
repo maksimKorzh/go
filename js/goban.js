@@ -80,6 +80,7 @@ function printBoard() {
       pos += ' ' + chars[board[sq]];
     } pos += '\n'
   } console.log(pos);
+  return pos;
 }
 
 function setStone(sq, color, user) {
