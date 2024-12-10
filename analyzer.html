@@ -18,10 +18,10 @@
   <script src="js/goban.js"></script>
   <script>
     function initGUI () { document.getElementById('stats').innerHTML = 'Paste your game in SGF below and click "Analyze"'; }
-    initGoban();
     
     function loadGame() {
       let sgf = document.getElementById('sgf').value;
+      initGoban();
       loadSgf(sgf);
       performance();
     }
