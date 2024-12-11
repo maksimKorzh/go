@@ -38,7 +38,7 @@
         let col_21 = move_21 % 21;
         let move_19 = (row_21-1)*19+(col_21-1);
         let score = await movePolicy(move_19);
-        document.getElementById('stats').innerHTML = 'Move #' + i + ' is NN choice ' + score;
+        document.getElementById('stats').innerHTML = 'Move ' + i + ' is NN choice #' + score;
         if (i % 2) blackScores.push(score);
         else whiteScores.push(score);
         document.getElementById('sgf').value = printBoard();
