@@ -197,3 +197,38 @@ function initGUI() {
   resizeCanvas();
   document.getElementById('stats').innerHTML = 'AI(dan), Chinese rules, Komi 7.5';
 }
+
+function initAnalyzer() {
+  let container = document.getElementById('goban');
+  canvas = document.createElement('canvas');
+  canvas.style = 'border: 2px solid black;';
+  container.appendChild(canvas);
+  canvas.addEventListener('click', userInput);
+  ctx = canvas.getContext('2d');
+  document.getElementById('controls').innerHTML = `
+    <textarea id="sgf" spellcheck="false" style="font-size: 18px; width: 100%;" placeholder="Paste your SGF here..."></textarea>
+    <select id="moveFrom" style="font-size: 18px;">
+      <option>First</option>
+      <option>50</option>
+      <option>100</option>
+      <option>150</option>
+      <option>200</option>
+      <option>250</option>
+      <option>300</option>
+    </select>
+    <select id="moveTo" style="font-size: 18px;">
+      <option>Last</option>
+      <option>50</option>
+      <option>100</option>
+      <option>150</option>
+      <option>200</option>
+      <option>250</option>
+      <option>300</option>
+    </select>
+    <button onclick="loadGame();" style="font-size: 18px;">Analyze</button>
+  `;
+  window.addEventListener('resize', resizeCanvas);
+  initGoban();
+  resizeCanvas();
+  document.getElementById('stats').innerHTML = 'AI(dan), Chinese rules, Komi 7.5';
+}

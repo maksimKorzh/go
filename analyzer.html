@@ -6,33 +6,41 @@
   <meta name="description" content="Go/Weiqi/Baduk SGF game AI performance analyzer">
   <meta name="keyword" content="go, weiqi, baduk, game of go, katago, neural net, web browser, android application, free, ad-free">
   <base href="/go/">
+  <link rel="stylesheet" href="css/styles.css">
   <title>Game analyzer</title>
 </head>
 <body align="center">
+  <div id="controls"></div>
+  <div class="container"><div id="goban"></div></div>
   <div id="stats" style="font-size: 18px;"></div>
-  <textarea id="sgf" spellcheck="false" style="font-size: 18px; width: 500px; height: 500px;"></textarea>
-  <div><button onclick="loadGame();" style="font-size: 18px;">Analyze</button></div>
-  <div id="controls" hidden></div>
-  <div class="container" hidden><div id="goban"></div></div>
   <script src="js/tensorflow.js"></script>
   <script src="js/goban.js"></script>
+  <script src="js/gui.js"></script>
   <script>
-    function initGUI () { document.getElementById('stats').innerHTML = 'Paste your game in SGF below and click "Analyze"'; }
+    function gameMoves() { return; }
+    function userInput() { return; }
+    initGUI = initAnalyzer;
     
     // Load SGF
     function loadGame() {
       let sgf = document.getElementById('sgf').value;
       initGoban();
       loadSgf(sgf);
-      performance();
+      analyzeGame();
     }
 
     // Measure average move choice
-    async function performance() {
+    async function analyzeGame() {
       let blackScores = [];
       let whiteScores = [];
       firstMove();
+      let moveFrom = document.getElementById('moveFrom').value;
+      let moveTo = document.getElementById('moveTo').value;
+      moveFrom = moveFrom == 'First' ? 1 : parseInt(moveFrom);
+      moveTo = moveTo == 'Last' ? moveHistory.length : parseInt(moveTo);
       for (let i = 1; i < moveHistory.length; i++) {
+        if (i < moveFrom) { nextMove(); drawBoard(); continue; }
+        if (i > moveTo) break;
         let move_21 = moveHistory[i].move;
         let row_21 = Math.floor(move_21 / 21);
         let col_21 = move_21 % 21;
@@ -41,18 +49,21 @@
         document.getElementById('stats').innerHTML = 'Move ' + i + ' is NN choice #' + score;
         if (i % 2) blackScores.push(score);
         else whiteScores.push(score);
-        document.getElementById('sgf').value = printBoard();
+        drawBoard();
         nextMove();
       }
       let blackPerformance = 0;
-      for (let i = 0; i < blackScores.length; i++) blackPerformance += blackScores[i];
-      blackPerformance = Math.floor(blackPerformance / blackScores.length);
       let whitePerformance = 0;
+      for (let i = 0; i < blackScores.length; i++) blackPerformance += blackScores[i];
       for (let i = 0; i < whiteScores.length; i++) whitePerformance += whiteScores[i];
+      blackPerformance = Math.floor(blackPerformance / blackScores.length);
       whitePerformance = Math.floor(whitePerformance / whiteScores.length);
       let blackRank = blackPerformance < 10 ? ((10-blackPerformance) + 'd') : ((blackPerformance - 9) + 'k');
       let whiteRank = whitePerformance < 10 ? ((10-whitePerformance) + 'd') : ((whitePerformance - 9) + 'k');
-      document.getElementById('sgf').value = 'Black average NN move is #' + blackPerformance + ', ~ OGS ' + blackRank + '\n' + 'White average NN move is #' + whitePerformance + ', ~ OGS ' + whiteRank;
+      document.getElementById('stats').innerHTML = `
+        Average NN policy move number choice and estimated rank:<br>
+        BLACK #` + blackPerformance + `, ~ OGS ` + blackRank +
+       `<br>WHITE #` + whitePerformance + `, ~ OGS ` + whiteRank;
     }
 
     // Get current move choice from NN
