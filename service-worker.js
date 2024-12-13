@@ -5,6 +5,7 @@ self.addEventListener('install', (event) => {
         '/go/',
         '/go/manifest.json',
         '/go/index.html',
+        '/go/analyzer.html',
         '/go/css/styles.css',
         '/go/js/tensorflow.js',
         '/go/js/goban.js',
