@@ -12,7 +12,7 @@
 <body align="center">
   <div id="controls"></div>
   <div class="container"><div id="goban"></div></div>
-  <div id="stats" style="font-size: 18px;"></div>
+  <div id="stats" style="font-size: 38px; margin-bottom: 2%;"></div>
   <script src="js/tensorflow.js"></script>
   <script src="js/goban.js"></script>
   <script src="js/gui.js"></script>
@@ -58,8 +58,8 @@
         document.getElementById('stats').innerHTML = 'Move ' + i + ' is NN choice #' + score;
         if (i % 2) blackScores.push(score);
         else whiteScores.push(score);
-        drawBoard();
         nextMove();
+        drawBoard();
       }
       let blackPerformance = 0;
       let whitePerformance = 0;
