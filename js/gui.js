@@ -225,7 +225,7 @@ function initAnalyzer() {
       <option>250</option>
       <option>300</option>
     </select>
-    <button onclick="loadGame();" style="font-size: 18px;">Analyze</button>
+    <button onclick="loadGame();">Analyze</button>
   `;
   window.addEventListener('resize', resizeCanvas);
   initGoban();
