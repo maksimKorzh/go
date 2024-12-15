@@ -71,9 +71,8 @@
       let blackRank = blackPerformance < 10 ? ((10-blackPerformance) + 'd') : ((blackPerformance - 9) + 'k');
       let whiteRank = whitePerformance < 10 ? ((10-whitePerformance) + 'd') : ((whitePerformance - 9) + 'k');
       document.getElementById('stats').innerHTML = `
-        Average NN policy move number choice and estimated rank:<br>
-        BLACK #` + blackPerformance + `, ~ OGS ` + blackRank +
-       `<br>WHITE #` + whitePerformance + `, ~ OGS ` + whiteRank;
+        BLACK ~ OGS ` + blackRank +
+       `, WHITE ~ OGS ` + whiteRank;
     }
 
     // Get current move choice from NN
