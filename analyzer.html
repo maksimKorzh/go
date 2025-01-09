@@ -61,6 +61,7 @@
         else whiteScores.push(score);
         nextMove();
         drawBoard();
+        await new Promise(requestAnimationFrame);
       }
       let blackPerformance = 0;
       let whitePerformance = 0;
