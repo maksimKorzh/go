@@ -1,6 +1,7 @@
 var canvas, ctx, cell;
 var editMode = 0;
 var gameOver = 0;
+var db = 1;
 
 function drawBoard() {
   cell = canvas.width / (size-2);
@@ -17,7 +18,7 @@ function drawBoard() {
   };
   ctx.lineWidth = 1;
   ctx.stroke();
-  let candidateMoves = gameMoves(saveSgf().slice(1, -1));
+  let candidateMoves = db ?  gameMovesBlack(saveSgf().slice(1, -1)) : gameMovesWhite(saveSgf().slice(1, -1));
   for (let row = 0; row < size-2; row++) {
     for (let col = 0; col < size-2; col++) {
       let sq = (row+1) * size + (col+1);
@@ -173,6 +174,12 @@ function handleAI() {
     level ^= 1;
     document.getElementById('stats').innerHTML = level ? 'AI (dan)' : 'AI (kyu)';
   }
+}
+
+function handleDB() {
+  db ^= 1;
+  document.getElementById('stats').innerHTML = db ? 'Using BLACK wins database' : 'Using WHITE wins database';
+  drawBoard();
 }
 
 function initGUI() {
